@@ -37,8 +37,9 @@ class CustomAccountMove(models.Model):
         return super(CustomAccountMove, self).write(vals)
 
     def button_cancel(self):
-        if not self.cancellation_reason:
-            raise ValidationError("Cancellation Reason Should be Added First")
+        if self:
+            if not self.cancellation_reason:
+                raise ValidationError("Cancellation Reason Should be Added First")
         return super().button_cancel()
 
     amount_total_words_ar = fields.Char()

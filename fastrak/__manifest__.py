@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_automation', 'mail', 'account', 'om_account_accountant', 'hr', 'contacts'],
+    'depends': ['base', 'base_automation', 'mail', 'account', 'hr', 'contacts'],
 
     # always loaded
     'data': [

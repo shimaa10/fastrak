@@ -17,7 +17,7 @@
                 <page string="Api Key" groups="base.group_no_one">
                     <group>
 <!--                        <field name="api_token"/>-->
-<!--                        <field name="auth_token"/>-->
+<!--                        <field name="api_token"/>-->
                         <field name="token_value"/>
                     </group>
                 </page>

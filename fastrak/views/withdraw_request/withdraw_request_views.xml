@@ -159,8 +159,8 @@
         <field name="model">withdraw.request</field>
         <field name="arch" type="xml">
             <search string="Search">
-                <field name="customer" string="Customer Name" domain="[('customer','like',self)]"/>
-                <field name="customer_id" string="Customer Id" domain="[('customer_id','like',self)]"/>
+                <!-- <field name="customer" string="Customer Name" domain="[('customer','like',self)]"/> -->
+                <!-- <field name="customer_id" string="Customer Id" domain="[('customer_id','like',self)]"/> -->
             </search>
         </field>
     </record>

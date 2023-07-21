@@ -379,7 +379,7 @@ class BillOfLoading(Controller):
                                 print("NEW LINES -> ", invoice_service_lines)
                                 bol_obj.invoice_id.invoice_line_ids = invoice_service_lines
                                 print('C Assign ->', bol_obj.invoice_id.invoice_line_ids)
-                                bol_obj.invoice_id.post()
+                                bol_obj.invoice_id.action_post()
                                 success_update_msg.append('Shipping Fees')
 
                             else:
@@ -436,7 +436,7 @@ class BillOfLoading(Controller):
                                 bol_obj.invoice_id.invoice_line_ids = invoice_service_lines
                                 print('C Assigned Lines ->', bol_obj.invoice_id.invoice_line_ids)
 
-                                bol_obj.invoice_id.post()
+                                bol_obj.invoice_id.action_post()
                                 success_update_msg.append('Discount')
 
                             else:

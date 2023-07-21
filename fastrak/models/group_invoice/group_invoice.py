@@ -34,7 +34,7 @@ class GroupInvoice(models.Model):
     penalty_invoice = fields.Many2one(
         'account.move',
         track_visibility='onchange',
-        domain=[('type', '=', 'out_invoice'), ('partner_id', '=', 'customer')]
+        domain=[('move_type', '=', 'out_invoice'), ('partner_id', '=', 'customer')]
     )
 
     print_date = fields.Date(track_visibility='onchange', string='Print Date', required=True,
@@ -300,10 +300,10 @@ class GroupInvoice(models.Model):
             a clean extension chain).
             """
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.env.user.company_id.id,
                                  force_company=self.env.user.company_id.id)
-        journal = self.env['account.move'].with_context(default_type='out_invoice')._get_default_journal()
+        journal = self.env['account.journal'].search([('type', '=', 'sale'), ('company_id', '=', self.env.user.company_id.id)], limit=1)
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.env.user.company_id.name, self.env.user.company_id.id))
@@ -312,14 +312,14 @@ class GroupInvoice(models.Model):
 
         invoice_values = {
             'ref': 'Penalty Invoice {}'.format(self.customer.display_name),
-            'type': 'out_invoice',
+            'move_type': 'out_invoice',
             'narration': self.note,
             'invoice_user_id': self.create_uid.id,
             'partner_id': self.customer.id,
-            'invoice_partner_bank_id': self.env.user.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.env.user.company_id.partner_id.bank_ids[:1].id,
             'journal_id': journal.id,  # company comes from the journal
             'invoice_origin': 'Penalty Invoice {}'.format(self.customer.display_name),
-            'invoice_payment_ref': 'Penalty Invoice {}'.format(self.customer.display_name),
+            'payment_reference': 'Penalty Invoice {}'.format(self.customer.display_name),
             'invoice_line_ids': invoice_service_lines,
             'company_id': self.env.user.company_id.id,
         }
@@ -335,7 +335,7 @@ class GroupInvoice(models.Model):
                     # second check if there is no penalty invoice then create it
 
                     penalty_invoice = invoice_model.create(rec._prepare_penalty_invoice_lines())
-                    penalty_invoice.post()
+                    penalty_invoice.action_post()
                     rec.write({'penalty_invoice': penalty_invoice.id})
                 else:
                     # second check if there is invoice then update the penalty if invoice not yet paid
@@ -346,7 +346,7 @@ class GroupInvoice(models.Model):
 
                         # add new invoice lines & post invoice again
                         rec.penalty_invoice.invoice_line_ids = rec._get_penalty_service_lines()
-                        rec.penalty_invoice.post()
+                        rec.penalty_invoice.action_post()
 
                     else:
                         raise UserError(_("Invoice already has been paid"))
@@ -375,7 +375,7 @@ class GroupInvoice(models.Model):
 class GroupInvoiceLine(models.Model):
     _name = 'fastrak.group.invoice.line'
 
-    invoice = fields.Many2one('account.move', domain=[('type', '=', 'out_invoice')])
+    invoice = fields.Many2one('account.move', domain=[('move_type', '=', 'out_invoice')])
     amount = fields.Float(compute='_compute_amount', string="Amount")
 
     group_invoice_id = fields.Many2one('fastrak.group.invoice')

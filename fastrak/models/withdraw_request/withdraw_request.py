@@ -59,7 +59,7 @@ class WithDrawRequest(models.Model):
     payment_journal = fields.Many2one('account.journal', track_visibility='onchange',
                                       domain=[('type', 'in', ('bank', 'cash'))])
     # Revenue Invoice
-    invoice = fields.Many2one('account.move', track_visibility='onchange', domain=[('type', '=', 'out_invoice')],
+    invoice = fields.Many2one('account.move', track_visibility='onchange', domain=[('move_type', '=', 'out_invoice')],
                               readonly=True, string='Invoice')
 
     # Entry for the invoice payment
@@ -70,7 +70,7 @@ class WithDrawRequest(models.Model):
     # Entry for the customer payment to deduct amount from the other's money collection account
 
     customer_withdraw_entry = fields.Many2one('account.move', track_visibility='onchange', readonly=True,
-                                              domain=[('type', '=', 'entry')], string='Customer Withdraw Entry')
+                                              domain=[('move_type', '=', 'entry')], string='Customer Withdraw Entry')
 
     note = fields.Text(track_visibility='onchange', string='Notes')
     order_ids = fields.Text(track_visibility='onchange', string='Notes', readonly=True)
@@ -148,9 +148,9 @@ class WithDrawRequest(models.Model):
         # Get and check cost center for penalty product
         line_category = money_collection_service_product.product_tmpl_id.categ_id
         if line_category.cost_centers_id:
-            cost_center = line_category.cost_centers_id
+            cost_center = line_category.cost_centers_id.id
         else:
-            cost_center = None
+            cost_center = False
 
         if self.company_id.activate_vat_calculation:
             line_data = (0, 0, {
@@ -159,7 +159,7 @@ class WithDrawRequest(models.Model):
                 'quantity': 1,
                 'price_unit': service_price,
                 # Add Cost Center To Line
-                'cost_centers_id': cost_center.id,
+                'cost_centers_id': cost_center,
                 'tax_ids': [self._get_tax_lines()]
 
             })
@@ -170,7 +170,7 @@ class WithDrawRequest(models.Model):
                 'quantity': 1,
                 'price_unit': service_price,
                 # Add Cost Center To Line
-                'cost_centers_id': cost_center.id,
+                'cost_centers_id': cost_center,
             })
 
         return [line_data]
@@ -182,10 +182,10 @@ class WithDrawRequest(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.company_id.id, force_company=self.company_id.id)
-        journal = self.env['account.move'].with_context(default_type='out_invoice')._get_default_journal()
-        if not journal:
+        journal = self.env['account.journal'].search([('type', '=', 'sale'), ('company_id', '=', self.company_id.id)],limit=1)
+        if not journal or journal.type != 'sale':
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
 
@@ -193,13 +193,13 @@ class WithDrawRequest(models.Model):
 
         invoice_values = {
             'ref': 'Money Collection Invoice {}'.format(self.customer.display_name),
-            'type': 'out_invoice',
+            'move_type': 'out_invoice',
             'invoice_user_id': self.create_uid.id,
             'partner_id': self.customer.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             'journal_id': journal.id,  # company comes from the journal
             'invoice_origin': 'Money Collection Invoice {}'.format(self.customer.display_name),
-            'invoice_payment_ref': 'Money Collection Invoice {}'.format(self.customer.display_name),
+            'payment_reference': 'Money Collection Invoice {}'.format(self.customer.display_name),
             'invoice_line_ids': invoice_service_lines,
             'company_id': self.env.user.company_id.id,
         }
@@ -213,6 +213,8 @@ class WithDrawRequest(models.Model):
         # Customer Other's money collection account Fixed in both cases (cash or bank)
 
         money_collection_account = self.env['account.account'].search([('is_money_collection_account', '=', True)])
+        if not money_collection_account:
+            raise ValidationError(_("Missing Money Collection Account, Please Add it from Chart of Accounts and check the box 'Is Money Collection Account'"))
         line_1 = (0, 0, {
             'account_id': money_collection_account.id,
             'partner_id': self.customer.id,
@@ -222,13 +224,13 @@ class WithDrawRequest(models.Model):
 
         if self.payment_journal.type == 'cash':
             line_2 = (0, 0, {
-                'account_id': self.payment_journal.default_credit_account_id.id,
+                'account_id': self.payment_journal.inbound_payment_method_line_ids[:1].payment_account_id.id,
                 'credit': self.amount
             })
 
         elif self.payment_journal.type == 'bank':
             line_2 = (0, 0, {
-                'account_id': self.payment_journal.default_credit_account_id.id,
+                'account_id': self.payment_journal.inbound_payment_method_line_ids[:1].payment_account_id.id,
                 'credit': self.amount
             })
 
@@ -243,20 +245,19 @@ class WithDrawRequest(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.company_id.id, force_company=self.company_id.id)
-        journal = self.env['account.move'].with_context(default_type='entry')._get_default_journal()
+        journal = self.env['account.journal'].search([('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
 
         move_lines = self._get_customer_withdraw_payment_entry_lines()
-
         entry_vals = {
             'ref': '{} Money Withdraw'.format(self.customer.display_name),
-            'type': 'entry',
+            'move_type': 'entry',
             'invoice_user_id': self.create_uid.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             'journal_id': self.payment_journal.id,  # company comes from the journal
             'line_ids': move_lines,
             'company_id': self.env.user.company_id.id,
@@ -272,19 +273,19 @@ class WithDrawRequest(models.Model):
         payment_date = datetime.now()
 
         values = {
-            'payment_date': payment_date,
+            'date': payment_date,
             'payment_type': 'inbound',
             'partner_type': 'customer',
-            'has_invoices': True,
+            # 'has_invoices': True,
             'payment_method_id': 1,
             'partner_id': self.customer.id,
             # 'amount': self.revenue_amount + self.revenue_vat_amount,
             'amount': self.invoice.amount_residual,
             'currency_id': self.company_id.currency_id.id,
             'journal_id': self.payment_journal.id,
-            'communication': '{} Money Collection Revenue Payment'.format(self.customer.display_name),
-            'invoice_ids': [(6, 0, self.invoice.ids)],
-            # 'partner_bank_account_id': self.invoice_id.invoice_partner_bank_id.id,
+            'ref': '{} Money Collection Revenue Payment'.format(self.customer.display_name),
+            'reconciled_invoice_ids': [(6, 0, [self.invoice.id])],
+            # 'partner_bank_account_id': self.invoice_id.partner_bank_id.id,
             'company_id': self.company_id.id,
 
         }
@@ -309,7 +310,7 @@ class WithDrawRequest(models.Model):
                 'res_partner_id': user.partner_id.id,
                 'notification_type': 'inbox'}))
 
-        self.message_post(body=message, message_type='comment', subtype='mail.mt_comment',
+        self.message_post(body=message, message_type='comment', subtype_id=self.env.ref('mail.mt_comment').id,
                           notification_ids=notification_ids)
 
     def operation_confirm_payment(self, api_request=False):
@@ -336,7 +337,7 @@ class WithDrawRequest(models.Model):
         payment_vals = self._prepare_invoice_payment_record_values()
         payment = payment_model.create(payment_vals)
         self.invoice_payment = payment.id
-        self.invoice_payment.post()
+        self.invoice_payment.action_post()
 
     def request_invoice_creation(self):
         """
@@ -346,7 +347,7 @@ class WithDrawRequest(models.Model):
         if not self.invoice:
             account_move = self.env['account.move'].create(self._prepare_customer_invoice())
             self.invoice = account_move.id
-            self.invoice.post()
+            self.invoice.action_post()
         else:
             raise UserError(_("Invoice already has been created"))
 
@@ -356,9 +357,8 @@ class WithDrawRequest(models.Model):
         :return:
         """
         entry = self.env['account.move'].create(self._prepare_customer_withdraw_payment_entry())
-
         self.customer_withdraw_entry = entry.id
-        self.customer_withdraw_entry.post()
+        self.customer_withdraw_entry.action_post()
 
     def request_payment_entries_creation(self):
         """
@@ -379,7 +379,6 @@ class WithDrawRequest(models.Model):
             self._create_invoice_payment()
         else:
             raise ValidationError(_("Payment Invoice ALready Created"))
-
         if not self.customer_withdraw_entry:
             self._create_withdraw_payment_entry()
         else:

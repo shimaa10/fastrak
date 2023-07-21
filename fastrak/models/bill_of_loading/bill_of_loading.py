@@ -82,7 +82,7 @@ class FastrakBillOfLoading(models.Model):
     trips_ids = fields.One2many('bill.of.loading.trips', 'bol_id', track_visibility='onchange')
 
     # BOL Invoice
-    invoice_id = fields.Many2one('account.move', track_visibility='onchange', domain=[('type', 'in', ('out_invoice',))])
+    invoice_id = fields.Many2one('account.move', track_visibility='onchange', domain=[('move_type', 'in', ('out_invoice',))])
 
     # For Invoice Payment POS
     invoice_payment_collection = fields.Many2one(
@@ -93,23 +93,23 @@ class FastrakBillOfLoading(models.Model):
     # For Invoice Payment Cash
     payment_collection_entry = fields.Many2one(
         'account.move', track_visibility='onchange', string='Payment Entry',
-        domain=[('type', '=', ('entry',))]
+        domain=[('move_type', '=', ('entry',))]
     )
 
     # For External Money Collected for customer
     money_collection_entry = fields.Many2one('account.move', track_visibility='onchange',
-                                             domain=[('type', '=', ('entry',))])
+                                             domain=[('move_type', '=', ('entry',))])
 
     payment_is_registered = fields.Boolean(string='Register Payment')
 
     bank_commission_entry = fields.Many2one('account.move', track_visibility='onchange',
-                                            domain=[('type', '=', 'entry')])
+                                            domain=[('move_type', '=', 'entry')])
 
     # Refund & Cancellation Section
     refund_reason_comment = fields.Text(track_visibility='onchange', string='Refund Reason')
 
     refund_invoice_id = fields.Many2one('account.move', track_visibility='onchange',
-                                        domain=[('type', 'in', ('out_refund',))])
+                                        domain=[('move_type', 'in', ('out_refund',))])
 
     cancellation_reason = fields.Many2one('cancellation.reason', track_visibility='onchange')
 
@@ -505,9 +505,9 @@ class FastrakBillOfLoading(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.company_id.id, force_company=self.company_id.id)
-        journal = self.env['account.move'].with_context(default_type='out_invoice')._get_default_journal()
+        journal = self.env['account.journal'].search([('type', '=', 'sale'), ('company_id', '=', self.company_id.id)],limit=1)
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
@@ -526,7 +526,7 @@ class FastrakBillOfLoading(models.Model):
 
         invoice_vals = {
             'ref': '{}'.format(self.order_id),
-            'type': 'out_invoice',
+            'move_type': 'out_invoice',
             # 'narration': self.note,
             # 'currency_id': self.pricelist_id.currency_id.id,
             # 'campaign_id': self.campaign_id.id,
@@ -536,11 +536,11 @@ class FastrakBillOfLoading(models.Model):
             # 'team_id': self.team_id.id,
             'partner_id': self.customer.id,
             # 'partner_shipping_id': self.partner_shipping_id.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             # 'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
             'journal_id': journal.id,  # company comes from the journal
             'invoice_origin': self.order_id,
-            'invoice_payment_ref': self.order_id,
+            'payment_reference': self.order_id,
             # 'transaction_ids': [(6, 0, self.transaction_ids.ids)],
             'invoice_line_ids': invoice_service_lines,
             'company_id': self.env.user.company_id.id,
@@ -609,9 +609,9 @@ class FastrakBillOfLoading(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.company_id.id, force_company=self.company_id.id)
-        journal = self.env['account.move'].with_context(default_type='entry')._get_default_journal()
+        journal = self.env['account.journal'].search([('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
@@ -620,9 +620,9 @@ class FastrakBillOfLoading(models.Model):
 
         entry_vals = {
             'ref': '{}'.format(self.order_id),
-            'type': 'entry',
+            'move_type': 'entry',
             'invoice_user_id': self.create_uid.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             'journal_id': journal.id,  # company comes from the journal
             'line_ids': move_lines,
             'company_id': self.env.user.company_id.id,
@@ -643,18 +643,18 @@ class FastrakBillOfLoading(models.Model):
         journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
 
         values = {
-            'payment_date': payment_date,
+            'date': payment_date,
             'payment_type': 'inbound',
             'partner_type': 'customer',
-            'has_invoices': True,
+            # 'has_invoices': True,
             'payment_method_id': 1,
             'partner_id': self.customer.id,
             'amount': amount,
             'currency_id': current_invoice.currency_id.id,
             'journal_id': journal.id,
-            'communication': '{} ({})'.format(current_invoice.name, self.order_id),
-            'invoice_ids': [(6, 0, current_invoice.ids)],
-            'partner_bank_account_id': self.invoice_id.invoice_partner_bank_id.id,
+            'ref': '{} ({})'.format(current_invoice.name, self.order_id),
+            'reconciled_invoice_ids': [(6, 0, current_invoice.ids)],
+            'partner_bank_account_id': self.invoice_id.partner_bank_id.id,
             'company_id': self.invoice_id.company_id.id,
 
         }
@@ -701,9 +701,9 @@ class FastrakBillOfLoading(models.Model):
 
         values = {
             'ref': '{}'.format(self.order_id),
-            'type': 'entry',
+            'move_type': 'entry',
             'invoice_user_id': self.create_uid.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             'journal_id': journal.id,  # company comes from the journal
             'line_ids': move_lines,
             'company_id': self.env.user.company_id.id,
@@ -759,7 +759,7 @@ class FastrakBillOfLoading(models.Model):
 
                     if not api_action:
                         # Payment should be manually approved by accountant after being created thought api
-                        payment.post()
+                        payment.action_post()
                         # Assign the payment entry same account move
                         # as it will eventually refer to it in the account.payment
 
@@ -777,7 +777,7 @@ class FastrakBillOfLoading(models.Model):
                     #         'amount': current_invoice.amount_total,
                     #         'currency_id': self.invoice_id.currency_id.id,
                     #         'journal_id': journal.id,
-                    #         'communication': '{} ({})'.format(current_invoice.name, self.order_id),
+                    #         'ref': '{} ({})'.format(current_invoice.name, self.order_id),
                     #         'invoice_ids': [(6, 0, current_invoice.ids)],
                     #
                     #     }
@@ -799,7 +799,7 @@ class FastrakBillOfLoading(models.Model):
                     entry_data = self._prepare_register_payment_entry()
                     entry_result = self.env['account.move'].create(entry_data)
                     self.write({'payment_collection_entry': entry_result.id})
-                    self.payment_collection_entry.post()
+                    self.payment_collection_entry.action_post()
             else:
                 print("No shipping fees")
         else:
@@ -945,12 +945,12 @@ class FastrakBillOfLoading(models.Model):
         """
 
         self.ensure_one()
-        # ensure a correct context for the _get_default_journal method and company-dependent fields
+        # ensure a correct context for the _search_default_journal method and company-dependent fields
         self = self.with_context(default_company_id=self.company_id.id, force_company=self.company_id.id)
         if self.money_collection_payment_method == 'cash':
-            journal = self.env['account.move'].with_context(default_type='entry')._get_default_journal()
+            journal = self.env['account.journal'].search([('type', '=', 'cash'), ('company_id', '=', self.company_id.id)],limit=1)
         else:
-            journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
+            journal = self.env['account.journal'].search([('type', '=', 'bank'), ('company_id', '=', self.company_id.id)],limit=1)
 
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
@@ -960,9 +960,9 @@ class FastrakBillOfLoading(models.Model):
 
         entry_vals = {
             'ref': '{}'.format(self.order_id),
-            'type': 'entry',
+            'move_type': 'entry',
             'invoice_user_id': self.create_uid.id,
-            'invoice_partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
+            'partner_bank_id': self.company_id.partner_id.bank_ids[:1].id,
             'journal_id': journal.id,  # company comes from the journal
             'line_ids': move_lines,
             'company_id': self.env.user.company_id.id,

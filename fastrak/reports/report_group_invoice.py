@@ -19,7 +19,7 @@ class SampleReportPrint(models.AbstractModel):
         end_date = data['form'].get('date_to')
         target_partner = data['form'].get('target_partner')
         invoice_state = data['form'].get('state')
-        domain = [('type', '=', 'out_invoice')]
+        domain = [('move_type', '=', 'out_invoice')]
 
         net_total_amount = 0
         total_discount = 0

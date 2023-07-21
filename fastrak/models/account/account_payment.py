@@ -9,13 +9,13 @@ class CustomPayment(models.Model):
         Check invoice payment and toggle BOL order payment status after posting payment
         :return:
         """
-        invoice_ids = self.invoice_ids
+        invoice_ids = self.reconciled_invoice_ids
         if invoice_ids:
             bol_obj = self.env['fastrak.bill.of.loading'].search([('invoice_id', '=', invoice_ids[0].id)])
             if bol_obj:
                 bol_obj.toggle_order_payment_status()
 
-    def post(self):
-        res = super(CustomPayment, self).post()
+    def action_post(self):
+        res = super(CustomPayment, self).action_post()
         self._check_bol_invoice_payment()
         return res

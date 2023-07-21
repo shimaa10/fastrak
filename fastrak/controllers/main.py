@@ -58,7 +58,7 @@ class MainController(Controller):
                 return response
 
             # Success
-            if not target_user.api_token or not target_user.auth_token:
+            if not target_user.api_token or not target_user.api_token:
                 target_user.sudo().reset_api_token()
 
             token = target_user.api_token
