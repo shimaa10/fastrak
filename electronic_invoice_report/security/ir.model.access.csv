@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_electronic_invoice_report,electronic_invoice_report,model_electronic_invoice_report,,1,1,1,1
+
+access_electronic_customer_report,electronic_customer_report,model_electronic_customer_report,,1,1,1,1
+

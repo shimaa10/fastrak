@@ -40,7 +40,7 @@ Cost Principle ,
 
                     """,
     "license": "OPL-1",
-    'depends': ['account', 'hr'],
+    'depends': ['account_accountant', 'hr','fastrak'],
     'data': [
         'security/ir.model.access.csv',
         'views/cost_centers_view.xml',

@@ -60,14 +60,14 @@ class PrintInvoiceSummary(models.TransientModel):
         return self.env['fastrak.bill.of.loading'].search([('invoice_id', '=', invoice.id)])
 
     def _get_invoice_object(self, inv_name: str):
-        return self.env['account.move'].search([('name', '=', inv_name), ('type', '=', 'out_invoice')])
+        return self.env['account.move'].search([('name', '=', inv_name), ('move_type', '=', 'out_invoice')])
 
     def _get_invoice_amounts(self, invoice: object):
         order = None
-        if invoice.type == 'out_refund':
+        if invoice.move_type == 'out_refund':
             original_invoice = ((invoice.ref.split(':')[-1]).strip()).split(',')
             order = self._get_order_object(self._get_invoice_object(original_invoice))
-        elif invoice.type == 'out_invoice':
+        elif invoice.move_type == 'out_invoice':
             order = self._get_order_object(invoice)
         if order:
             shp_line = order.service_line_ids.filtered(lambda line: line.product_id.is_main_service_product)
@@ -106,7 +106,7 @@ class PrintInvoiceSummary(models.TransientModel):
         row_style = easyxf('align: horiz center;')
 
         selection_criteria = [
-            ('type', 'in', ['out_invoice', 'out_refund']),
+            ('move_type', 'in', ['out_invoice', 'out_refund']),
             ('state', '=', 'posted'),
             ('invoice_date', '>=', self.from_date),
             ('invoice_date', '<=', self.to_date),
@@ -121,7 +121,7 @@ class PrintInvoiceSummary(models.TransientModel):
             line_amount, vat_amount, discount_amount = self._get_invoice_amounts(invoice)
 
             worksheet.write(row, 0, '', row_style)  # State not handled by us
-            worksheet.write(row, 1, 'Invoice' if invoice.type == 'out_invoice' else 'CreditNote', row_style)
+            worksheet.write(row, 1, 'Invoice' if invoice.move_type == 'out_invoice' else 'CreditNote', row_style)
             worksheet.write(row, 2, invoice.partner_id.id, row_style)
             worksheet.write(row, 3, invoice.partner_id.display_name, row_style)
             worksheet.write(row, 4, invoice.invoice_date.strftime('%Y-%m-%d'), row_style)
@@ -129,7 +129,7 @@ class PrintInvoiceSummary(models.TransientModel):
             worksheet.write(row, 6, invoice_name, row_style)
             worksheet.write(row, 7, '', row_style)
             worksheet.write(row, 8, ((invoice.ref.split(':')[-1]).strip()).split(',')[
-                0] if invoice.type == 'out_refund' else '', row_style)
+                0] if invoice.move_type == 'out_refund' else '', row_style)
             worksheet.write(row, 9, '', row_style)
             worksheet.write(row, 10, '', row_style)
             worksheet.write(row, 11, invoice.narration or '', row_style)

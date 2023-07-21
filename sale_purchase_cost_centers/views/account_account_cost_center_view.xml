@@ -9,7 +9,9 @@
 
             <xpath expr="//field[@name='deprecated']" position="after">
 
-                <field name="required_cost_center" attributes="{'invisible':[('internal_group','!=','expense')]}"
+                <!-- <field name="required_cost_center" attributes="{'invisible':[('internal_group','!=','expense')]}"
+                       /> -->
+                       <field name="required_cost_center" attributes="{'invisible':[('internal_group','!=','expense')]}"
                        groups="fastrak.fastrak_configuration_manager"/>
 
 

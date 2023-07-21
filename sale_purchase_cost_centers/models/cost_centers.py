@@ -21,7 +21,6 @@ class CostCenters(models.Model):
             res.append((order.id, name))
         return res
 
-
 # class SaleOrder(models.Model):
 #     """docstring for SaleOrder"""
 #     _inherit = 'sale.order'
@@ -132,17 +131,18 @@ class AccountMove(models.Model):
     @api.onchange('line_ids')
     def _check_entry_cost_center(self):
         # Condition applied on entry only
-        for rec in self.filtered(lambda l: l.type == 'entry'):
+        for rec in self.filtered(lambda l: l.move_type == 'entry'):
             for line in rec.line_ids:
                 if line:
                     if line.account_id.required_cost_center:
                         if not rec.cost_centers_id:
                             raise ValidationError(_("Missing Cost Center"))
 
+
     @api.onchange('invoice_line_ids')
     def _check_invoice_cost_center_lines(self):
         # Condition applied on Invoice
-        for rec in self.filtered(lambda l: l.type == 'out_invoice'):
+        for rec in self.filtered(lambda l: l.move_type == 'out_invoice'):
             print("YES INVOICE")
             if not rec.cost_centers_id:
                 for line in rec.invoice_line_ids:

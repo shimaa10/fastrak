@@ -9,9 +9,14 @@
 
             <xpath expr="//group[@name='first']" position="after">
                 <group name="Cost Center">
+                    <!-- <group string="Cost Center">
+                        <field name="cost_centers_id" options="{'no_create': True}"/>
+                    </group> -->
+
                     <group string="Cost Center" groups="fastrak.fastrak_configuration_manager">
                         <field name="cost_centers_id" options="{'no_create': True}"/>
                     </group>
+
                 </group>
             </xpath>
         </field>

@@ -7,9 +7,11 @@
     'website': "http://www.yourcompany.com",
     'category': 'accounting',
     'version': '0.1',
-    'depends': ['base', 'account'],
+    'depends': ['base', 'account_accountant','contacts','fastrak'],
 
     'data': [
+        
+        'security/ir.model.access.csv',
         'report/electronic_invoice_report.xml',
         'customer_report/customer_report.xml',
     ],
