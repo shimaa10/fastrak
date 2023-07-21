@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+<!--    <report-->
+<!--            id="action_report_crm_sales_report"-->
+<!--            model="crm.lead"-->
+<!--            string="CRM Sales Report"-->
+<!--            report_type="qweb-pdf"-->
+<!--            name="fastrak_crm.report_crm_sales"-->
+<!--            file="fastrak_crm.report_crm_sales"-->
+<!--            menu="False"-->
+<!--    />-->
+
+
+    <report
+            id="action_report_crm_target_report"
+            model="crm.target"
+            string="CRM Target Report"
+            report_type="qweb-pdf"
+            name="fastrak_crm.report_crm_target"
+            file="fastrak_crm.report_crm_target"
+            menu="False"
+    />
+
+ <report
+            id="action_report_crm_lead_report"
+            model="crm.lead"
+            string="CRM Lead Report"
+            report_type="qweb-pdf"
+            name="fastrak_crm.report_crm_lead"
+            file="fastrak_crm.report_crm_lead"
+            menu="False"
+    />
+
+
+</odoo>

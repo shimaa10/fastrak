@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <report
+            id="action_report_bill_of_loading"
+            model="fastrak.bill.of.loading"
+            string="Bill of Loading"
+            report_type="qweb-pdf"
+            name="fastrak.report_bill_of_loading"
+            file="fastrak.report_bill_of_loading"
+            menu="False"
+    />
+
+    <report
+            id="action_report_group_invoice"
+            model="account.move"
+            string="Group Invoice"
+            report_type="qweb-pdf"
+            name="fastrak.report_group_invoice"
+            file="fastrak.report_group_invoice"
+            menu="False"
+    />
+
+</odoo>

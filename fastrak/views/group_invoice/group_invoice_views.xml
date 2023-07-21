@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <record id="group_invoice_form" model="ir.ui.view">
+        <field name="name">Group Invoice</field>
+        <field name="model">fastrak.group.invoice</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Generate Group Invoice" type="object" name="generate_group_invoice"
+                            confirm="Confirm Generation ?"
+                            attrs="{'invisible':[('state','in',('paid',))]}"
+                    />
+
+                    <button string="Calculate Penalty" type="object" name="calculate_penalty"
+                            class="btn btn-info"
+                            attrs="{'invisible':['|',('state','in',('paid',)),('total_amount','=',0)]}"
+                    />
+
+                    <button string="Create Penalty Invoice" type="object" name="create_penalty_invoice"
+                            class="btn btn-warning" confirm="Create Invoice ?"
+                            attrs="{'invisible':['|',('penalty_invoice','!=',False),('total_amount','=',0)]}"
+                    />
+
+                    <button string="Re-Calculate Penalty Invoice" type="object" name="create_penalty_invoice"
+                            class="btn btn-warning" confirm="Confirm Recalculation of penalty ?"
+                            attrs="{'invisible':['|',('state','in',('paid',)),('penalty_invoice','=',False)]}"
+                    />
+
+                    <button string="Confirm Invoice Payment" type="object" name="confirm_group_invoice_payment"
+                            class="btn btn-success" confirm="Confirm Payment ?"
+                            attrs="{'invisible':['|',('state','in',('paid',)),('total_amount','=',0)]}"
+                    />
+
+                    <button name="%(group_invoice_discount_wizard_act_window)d" string="Add Discount"
+                            attrs="{'invisible':['|',('state','in',('paid',)),('total_amount','=',0)]}"
+                            type="action"/>
+
+
+                    <button string="Print Invoices" type="object" name="print_invoices" class="btn btn-info"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="unpaid,delayed,paid"/>
+                </header>
+
+                <widget name="web_ribbon" title="UnPaid" bg_color="bg-dark"
+                        attrs="{'invisible': [('state', '!=', 'unpaid')]}"/>
+
+                <widget name="web_ribbon" title="Delayed" bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'delayed')]}"/>
+
+                <widget name="web_ribbon" title="Paid" bg_color="bg-success"
+                        attrs="{'invisible': [('state', '!=', 'paid')]}"/>
+
+                <group>
+                    <group>
+                        <field name="customer" attrs="{'readonly':[('state','=','paid')]}"/>
+                    </group>
+
+                    <group>
+                        <field name="from_date" attrs="{'readonly':[('state','=','paid')]}"/>
+                        <field name="to_date" attrs="{'readonly':[('state','=','paid')]}"/>
+                    </group>
+                </group>
+
+                <group>
+                    <group>
+                        <field name="print_date" attrs="{'readonly':[('state','=','paid')]}"/>
+                        <field name="due_at" attrs="{'readonly':[('state','=','paid')]}"/>
+                    </group>
+
+                    <group>
+                        <field name="total_amount" attrs="{'readonly':[('state','=','paid')]}"/>
+                        <field name="total_discount" readonly="1"/>
+                        <field name="penalty_rate" attrs="{'readonly':[('state','=','paid')]}"/>
+                        <field name="penalty_amount" attrs="{'readonly':[('state','=','paid')]}"/>
+                        <field name="total_to_collect" readonly="1"/>
+
+
+                    </group>
+                </group>
+
+                <hr/>
+
+                <group>
+                    <field name="invoice_ids" widget="one2many" mode="tree,kanban"
+                           attrs="{'readonly':[('state','=','paid')]}">
+                        <tree editable="bottom" default_order="id desc">
+                            <field name="invoice" options="{'no_create':True}"/>
+                            <field name="amount"/>
+                        </tree>
+                    </field>
+                </group>
+
+                <group>
+                    <field name="penalty_invoice" readonly="1" attrs="{
+                    'invisible':[('penalty_amount','=',0)],
+                    'readonly':[('state','=','paid')]
+                    }"/>
+                </group>
+
+                <notebook>
+                    <page string="Note">
+                        <field name="note"/>
+                    </page>
+
+                    <page string="Payment Terms">
+                        <field name="penalty_terms_and_condition"/>
+                    </page>
+                </notebook>
+
+                <hr/>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+            </form>
+
+        </field>
+
+    </record>
+
+
+    <record id="group_invoice_tree" model="ir.ui.view">
+        <field name="name">Group invoice</field>
+        <field name="model">fastrak.group.invoice</field>
+
+        <field name="arch" type="xml">
+            <tree
+                    decoration-muted="state == 'unpaid'"
+                    decoration-danger="state == 'delayed'"
+                    decoration-success="state == 'paid'"
+            >
+                <field name="customer"/>
+                <field name="from_date"/>
+                <field name="to_date"/>
+                <field name="state"/>
+                <field name="due_at"/>
+                <field name="total_amount"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="group_invoice_action" model="ir.actions.act_window">
+        <field name="name">Group Invoice</field>
+        <field name="res_model">fastrak.group.invoice</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem name="Group Invoices"
+              id="group_invoice_menu"
+              parent="account.menu_finance_receivables"
+              action="group_invoice_action"
+              sequence="0"
+              groups="fastrak.group_invoice_user,fastrak.group_invoice_manager"
+    />
+
+
+</odoo>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record model="ir.module.category" id="fastrak.fastrak_management">
+        <field name="name">Bill Of Loading Management</field>
+        <field name="description">Bill Of Loading Permission Management</field>
+        <field name="sequence">1000</field>
+    </record>
+
+    <record id="fastrak_api_log_access" model="res.groups">
+        <field name="name">Access Api Logs</field>
+
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <record id="fastrak_operation_manager" model="res.groups">
+        <field name="name">Operation Manager</field>
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <record id="fastrak_operation_assistant" model="res.groups">
+        <field name="name">Operation Assistant</field>
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <record id="fastrak_configuration_manager" model="res.groups">
+        <field name="name">Configuration Manager</field>
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <record id="fastrak_audit_and_lock_bol_manager" model="res.groups">
+        <field name="name">Audit &amp; Lock Manager (Bill of loading)</field>
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <record id="fastrak_audit_and_lock_manager" model="res.groups">
+        <field name="name">Audit &amp; Lock Manager (Accounting)</field>
+        <field name="category_id" ref="fastrak_management"/>
+    </record>
+
+    <!-- Group Invoice Section -->
+    <record id="fastrak_group_invoice_management" model="ir.module.category">
+        <field name="name">Group Invoice Management</field>
+        <field name="description">Group Invoice Permission Management</field>
+        <field name="sequence">1002</field>
+    </record>
+
+
+    <record id="group_invoice_user" model="res.groups">
+        <field name="name">Group Credit  Invoice User (Accounting)</field>
+        <field name="category_id" ref="fastrak_group_invoice_management"/>
+    </record>
+
+    <record id="group_invoice_manager" model="res.groups">
+        <field name="name">Group Invoice Manager (Accounting)</field>
+        <field name="category_id" ref="fastrak_group_invoice_management"/>
+
+    </record>
+
+    <!-- End Group Invoice Section -->
+
+    <!-- Withdraw Request Section -->
+    <record id="fastrak.fastrak_withdraw_request_management" model="ir.module.category">
+        <field name="name">Withdraw Requests Management</field>
+        <field name="description">Withdraw Requests Permission Management</field>
+        <field name="sequence">1003</field>
+    </record>
+
+
+    <record id="fastrak.withdrawal_manager" model="res.groups">
+        <field name="name">Withdrawal Manager</field>
+        <field name="category_id" ref="fastrak_withdraw_request_management"/>
+
+    </record>
+
+
+    <record id="fastrak.withdrawal_assistant" model="res.groups">
+        <field name="name">Withdrawal Assistant</field>
+        <field name="category_id" ref="fastrak_withdraw_request_management"/>
+
+    </record>
+
+</odoo>

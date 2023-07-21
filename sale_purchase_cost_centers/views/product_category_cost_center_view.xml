@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Product Category Form View -->
+    <record id="product_category_cost_center_inherit_view" model="ir.ui.view">
+        <field name="name">product.category.cost.center.form</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//group[@name='first']" position="after">
+                <group name="Cost Center">
+                    <group string="Cost Center" groups="fastrak.fastrak_configuration_manager">
+                        <field name="cost_centers_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

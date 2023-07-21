@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record model="ir.ui.view" id="fastrak_custom_company_form_view">
+        <field name="name">pont_custom_company_form_view</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="activate_vat_calculation"/>
+            </xpath>
+
+            <xpath expr="//field[@name='favicon']" position="after">
+                <field name="company_report_header" widget="image" class="float-left oe_avatar"/>
+                <field name="company_report_footer" widget="image" class="float-left oe_avatar"/>
+            </xpath>
+
+            <xpath expr="//page" position="after">
+                <page string="Bank Info">
+                    <field name="bank_details"/>
+                </page>
+                <page string="Penalty Terms">
+                    <field name="penalty_terms"/>
+
+
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

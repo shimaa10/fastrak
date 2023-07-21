@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fastrak_report_bill_of_loading_view" model="ir.ui.view">
+        <field name="name">Bill Group Report</field>
+        <field name="model">fastrak.report.bill.of.loading</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                    </group>
+                    <group>
+                        <field name="date_to"/>
+                    </group>
+
+                </group>
+                <group>
+                    <field name="target_partner" options="{'no_create':True,'no_create_edit':True,'no_open':True}"/>
+                    <field name="order_status"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" default_focus="1" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-default" special="cancel"/>
+                </footer>
+            </form>
+
+        </field>
+    </record>
+
+
+    <record id="action_bill_of_loading_report_menu" model="ir.actions.act_window">
+        <field name="name">Bill Group Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fastrak.report.bill.of.loading</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="fastrak_report_bill_of_loading_view"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="fastrak.model_fastrak_report_bill_of_loading"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <menuitem
+            id="menu_bill_of_loading_report_root"
+            name="Reports"
+            parent="bill_of_loading_root_menu"
+            groups="fastrak.fastrak_operation_manager"
+    />
+
+    <menuitem
+            id="menu_bill_of_loading_wizard"
+            name="Bill Group Report"
+            parent="fastrak.menu_bill_of_loading_report_root"
+            action="action_bill_of_loading_report_menu"
+            groups="fastrak.fastrak_operation_manager"
+    />
+
+
+</odoo>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="withdrawal_request_form_view" model="ir.ui.view">
+        <field name="name">Withdraw Request</field>
+        <field name="model">withdraw.request</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                    <button name="request_invoice_creation" type="object"
+                            string="Create Invoice" class="btn btn-info"
+                            groups="fastrak.withdrawal_assistant"
+                            attrs="{'invisible':[('invoice','!=',False)]}"
+                    />
+
+                    <button name="request_payment_entries_creation" type="object"
+                            string="Create Payment Entries" class="btn btn-info"
+                            groups="fastrak.withdrawal_assistant"
+                            attrs="{'invisible':['|',('invoice','=',False),('status','in',('done','canceled'))]}"
+                    />
+
+                    <button name="confirm_request_payment" type="object" string="Mark Done" class="btn btn-success"
+                            groups="fastrak.withdrawal_assistant"
+                            attrs="{'invisible':['|',('status','in',('done','canceled')),('customer_withdraw_entry','=',False)]}"
+                    />
+
+                    <!--                    <button name="cancel_request_payment" type="object" string="Cancel" class="btn btn-danger"-->
+                    <!--                            groups="fastrak.withdrawal_manager"-->
+                    <!--                            attrs="{'invisible':[('status','not in',('done',))]}"-->
+                    <!--                    />-->
+
+                    <button name="reset_request_payment" type="object" string="Reset" class="btn btn-warning"
+                            groups="fastrak.withdrawal_manager"
+                            attrs="{'invisible':[('status','in',('draft','canceled'))]}"
+                    />
+
+                    <field name="status" widget="statusbar" statusbar_visible="draft,done,canceled"/>
+                </header>
+
+
+                <widget name="web_ribbon" title="Draft" bg_color="bg-dark"
+                        attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+
+                <widget name="web_ribbon" title="Canceled" bg_color="bg-danger"
+                        attrs="{'invisible': [('status', '!=', 'canceled')]}"/>
+
+                <widget name="web_ribbon" title="Done" bg_color="bg-success"
+                        attrs="{'invisible': [('status', '!=', 'done')]}"/>
+
+
+                <group>
+                    <group>
+                        <field name="customer" context="{'display_with_id':True}"
+                               attrs="{'readonly':[('status','not in',('draft',))]}"/>
+                        <field name="customer_id"/>
+
+                        <field name="amount" attrs="{'readonly':[('status','not in',('draft',))]}"/>
+
+                        <field name="revenue_type" attrs="{'readonly':[('status','not in',('draft',))]}"/>
+
+                        <field name="revenue_percentage" attrs="{
+                        'readonly':[('status','not in',('draft',))],
+                        'required':[('revenue_type','=','percent')],
+                        'invisible':[('revenue_type','!=','percent')]
+                        }"/>
+
+                        <field name="revenue_amount" attrs="{
+                        'readonly':[('status','not in',('draft',))],
+                        'required':[('revenue_type','=','amount')]
+                        }"/>
+
+                        <field name="revenue_vat_amount" attrs="{'readonly':[('status','not in',('draft',))]}"/>
+
+                    </group>
+
+                    <group>
+                        <field name="operation_status"/>
+                        <field name="company_id"/>
+                        <field name="request_timestamp"/>
+                        <field name="customer_collection_type" attrs="{'readonly':[('status','=','done')]}"/>
+                    </group>
+
+                </group>
+                <hr/>
+
+                <group>
+                    <group>
+
+                        <field name="invoice"/>
+                        <field name="invoice_payment"/>
+
+                    </group>
+
+                    <group>
+                        <field name="payment_journal" widget="selection"
+                               attrs="{'
+                               invisible': [('amount', '=', 0), ('status', '!=', 'draft')],
+                               'readonly':[('status', '=', 'done')]
+                               }"/>
+
+                        <hr/>
+
+
+                        <field name="customer_withdraw_entry"/>
+                    </group>
+
+                </group>
+
+                <notebook>
+                    <page string="Notes">
+                        <field name="note"/>
+                    </page>
+
+                    <page string="Orders">
+                        <field name="order_ids"/>
+                    </page>
+                </notebook>
+
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+
+            </form>
+
+        </field>
+    </record>
+
+    <record id="withdraw_request_tree_view" model="ir.ui.view">
+        <field name="name">Withdrawal Request Tree</field>
+        <field name="model">withdraw.request</field>
+
+        <field name="arch" type="xml">
+            <tree decoration-muted="status == 'draft'"
+                  decoration-success="status == 'done'"
+                  decoration-danger="status == 'canceled'"
+                  default_order="create_date desc"
+                  class="text-center"
+            >
+                <field name="id" string="Request Number"/>
+                <field name="customer"/>
+                <field name="customer_id"/>
+                <field name="request_timestamp"/>
+                <field name="revenue_type"/>
+                <field name="status"/>
+                <field name="amount"/>
+                <field name="operation_status"/>
+                <field name="customer_collection_type"/>
+            </tree>
+
+        </field>
+    </record>
+
+    <record id="customer_withdraw_request_search" model="ir.ui.view">
+        <field name="name">customer.withdraw.search</field>
+        <field name="model">withdraw.request</field>
+        <field name="arch" type="xml">
+            <search string="Search">
+                <field name="customer" string="Customer Name" domain="[('customer','like',self)]"/>
+                <field name="customer_id" string="Customer Id" domain="[('customer_id','like',self)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="customer_withdrawal_request_action_window" model="ir.actions.act_window">
+        <field name="name">Customer Withdrawal Request</field>
+        <field name="res_model">withdraw.request</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+    <!-- Top Root menu item -->
+
+    <menuitem name="Withdrawal Request" id="customer_withdrawal_request_root_menu"
+              groups="fastrak.withdrawal_assistant" parent="account.menu_finance"
+    />
+
+    <!-- menu categories -->
+
+    <menuitem name="Customer Withdrawal Request"
+              id="customer_withdrawal_request_main_menu"
+              parent="customer_withdrawal_request_root_menu"
+              action="customer_withdrawal_request_action_window"
+    />
+
+
+</odoo>

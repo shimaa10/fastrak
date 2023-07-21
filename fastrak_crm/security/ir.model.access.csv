@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fastrak_crm_fastrak_crm,fastrak_crm.fastrak_crm,model_fastrak_crm_fastrak_crm,base.group_user,1,1,1,1

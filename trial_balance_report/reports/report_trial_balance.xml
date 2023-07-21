@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_trial_balance_document">
+        <t t-call="web.html_container">
+            <t t-set="data_report_margin_top" t-value="12"/>
+            <t t-set="data_report_header_spacing" t-value="9"/>
+            <t t-set="data_report_dpi" t-value="110"/>
+            <t t-set="data_report_orientation" t-value="Landscape"/>
+            <t t-call="web.internal_layout">
+                <div class="page">
+
+                    <link rel="stylesheet" type="text/scss"
+                          href="/trial_balance_report/static/src/css/trial_balance.css"/>
+
+                    <h2 class="text-center">
+                        <span t-esc="res_company.name"/>: Trial Balance
+                    </h2>
+
+                    <div class="row mt32">
+                        <div class="col-4">
+                            <strong>Display Account:</strong>
+                            <p>
+                                <span t-if="data['display_account'] == 'all'">All accounts</span>
+                                <span t-if="data['display_account'] == 'movement'">With movements</span>
+                                <span t-if="data['display_account'] == 'not_zero'">With balance not equal to zero</span>
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <p>
+                                <t t-if="data['date_from']">
+                                    <strong>Date from :</strong>
+                                    <span t-esc="data['date_from']"/>
+                                    <br/>
+                                </t>
+                                <t t-if="data['date_to']">
+                                    <strong>Date to :</strong>
+                                    <span t-esc="data['date_to']"/>
+                                </t>
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <strong>Target Moves:</strong>
+                            <p>
+                                <span t-if="data['target_move'] == 'all'">All Entries</span>
+                                <span t-if="data['target_move'] == 'posted'">All Posted Entries</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!--                    <table class="table table-sm table-reports">-->
+                    <!--                        <thead>-->
+                    <!--                            <tr>-->
+                    <!--                                <th>Code</th>-->
+                    <!--                                <th>Account</th>-->
+                    <!--                                <th class="text-right">Debit</th>-->
+                    <!--                                <th class="text-right">Credit</th>-->
+                    <!--                                <th class="text-right">Balance</th>-->
+                    <!--                            </tr>-->
+                    <!--                        </thead>-->
+                    <!--                        <tbody>-->
+                    <!--                            <tr t-foreach="Accounts" t-as="account">-->
+                    <!--                                <td>-->
+                    <!--                                    <span t-att-style="style" t-esc="account['code']"/>-->
+                    <!--                                </td>-->
+                    <!--                                <td>-->
+                    <!--                                    <span style="color: white;" t-esc="'..'"/>-->
+                    <!--                                    <span t-att-style="style" t-esc="account['name']"/>-->
+                    <!--                                </td>-->
+                    <!--                                <td class="text-right">-->
+                    <!--                                    <span t-att-style="style" t-esc="account['debit']"-->
+                    <!--                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
+                    <!--                                </td>-->
+                    <!--                                <td class="text-right">-->
+                    <!--                                    <span t-att-style="style" t-esc="account['credit']"-->
+                    <!--                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
+                    <!--                                </td>-->
+                    <!--                                <td class="text-right">-->
+                    <!--                                    <span t-att-style="style" t-esc="account['balance']"-->
+                    <!--                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
+                    <!--                                </td>-->
+                    <!--                            </tr>-->
+                    <!--                        </tbody>-->
+                    <!--                    </table>-->
+
+                    <table class="table table-sm table-reports">
+                        <thead>
+                            <tr>
+                                <th rowspan="2"
+                                    style="text-align:center;vertical-align:middle;display: table-cell;text-align: -internal-center">
+                                    Code
+                                </th>
+                                <th rowspan="2" class="border"
+                                    style="text-align:center;vertical-align:middle;display: table-cell;text-align: -internal-center">
+                                    Account
+                                </th>
+                                <th colspan="2" class="report-header">Unadjusted Trial Balance</th>
+                                <th colspan="2" class="report-header">Adjustment</th>
+                                <th colspan="2" class="report-header">Adjusted Balance</th>
+                            </tr>
+                            <tr>
+                                <th class="dr-cr-border text-center">Dr.</th>
+                                <th class="dr-cr-border text-center">Cr.</th>
+                                <th class="dr-cr-border text-center">Dr.</th>
+                                <th class="dr-cr-border text-center">Cr.</th>
+                                <th class="dr-cr-border text-center">Dr.</th>
+                                <th class="dr-cr-border text-center">Cr.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tbody>
+                                <tr t-foreach="Accounts_CF" t-as="account">
+
+                                    <td>
+                                        <span t-att-style="style" t-esc="account['code']"/>
+                                    </td>
+                                    <td class="border">
+                                        <span t-att-style="style" t-esc="account['Account']"/>
+                                    </td>
+
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['init_d']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['init_c']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['filter_d']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['filter_c']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['total_d']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                    <td class="dr-cr-border">
+                                        <span t-att-style="style" t-esc="account['total_c']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr class="foooter">
+                                <td>Total :</td>
+                                <td></td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['init_d']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['init_c']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['filter_d']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['filter_c']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['total_d']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-att-style="style" t-esc="account_sum['total_c']"
+                                          t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

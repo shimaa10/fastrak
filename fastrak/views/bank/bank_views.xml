@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <record id="fastrak_res_partner_bank_custom_fields" model="ir.ui.view">
+        <field name="name">fastrak_res_partner_bank_custom_fields</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="iban_number"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+      <record id="fastrak_res_partner_bank_tree_custom_fields" model="ir.ui.view">
+        <field name="name">fastrak_res_partner_bank_tree_custom_fields</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='acc_number']" position="after">
+                <field name="iban_number"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="fastrak_res_bank_custom_fields" model="ir.ui.view">
+        <field name="name">fastrak_res_bank_custom_fields</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bic']" position="attributes">
+                <attribute name="string">Bank Identifier Code (Swift)</attribute>
+
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

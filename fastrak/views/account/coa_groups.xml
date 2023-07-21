@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="custom_account_group" model="ir.actions.act_window">
+        <field name="name">custom account group</field>
+        <field name="res_model">account.group</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+    <menuitem name="Chart of account groups" id="custom_menu_coa_group" parent="account.account_account_menu"
+              action="custom_account_group" groups="base.group_system"/>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fastrak_bill_of_loading_payment_register_automation" model="base.automation">
+        <field name="name">Fastrak Register Payment Automation</field>
+        <field name="model_id" ref="fastrak.model_fastrak_bill_of_loading"/>
+        <field name="active" eval="True"/>
+        <field name="trigger">on_write</field>
+        <field name="filter_pre_domain">[["order_status","=",'done']]</field>
+        <field name="filter_domain">[["order_status","=",'done'],["payment_is_registered","=",True]]</field>
+        <field name="trigger_field_ids" eval="[(4,ref('fastrak.field_fastrak_bill_of_loading__payment_is_registered'))]"/>
+
+        <field name="state">code</field>
+        <field name="code">record._register_payment_checker()</field>
+
+    </record>
+</odoo>

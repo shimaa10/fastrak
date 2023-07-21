@@ -1,0 +1,24 @@
+table,thead,tbody,th,td {
+padding: 5px;
+border: 1px solid black;
+}
+
+.custom_table {
+padding: 5px;
+border: 1px solid black;
+width: 100%;
+margin-bottom: 1rem;
+color: #212529;
+}
+
+.span_splitter{
+width:50%
+}
+
+
+.custom_address br {
+    content: '';
+}
+.custom_address br:after {
+    content: '  ';
+}

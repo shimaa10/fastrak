@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="withdraw_request_commission_form_view" model="ir.ui.view">
+            <field name="name">Withdraw Commission</field>
+            <field name="model">withdraw.request.commission</field>
+            <field name="arch" type="xml">
+                <form string="Commission">
+                    <sheet>
+                        <!--                        <div class="oe_title">-->
+                        <!--                            <label for="commission_type"/>-->
+                        <!--                            <h1>-->
+                        <!--                                <field name="commission_type" placeholder="Type"/>-->
+                        <!--                            </h1>-->
+                        <!--                        </div>-->
+
+                        <group>
+
+                            <group>
+                                <field name="range_from"/>
+                                <field name="range_to"/>
+                            </group>
+
+                            <group>
+                                <field name="create_date"/>
+                                <field name="create_uid"/>
+                            </group>
+
+                        </group>
+
+                        <group>
+
+                            <group>
+                                <field name="commission_type"/>
+                            </group>
+
+                            <group>
+                                <field name="commission_amount"
+                                       attrs="{
+                                   'invisible':['|',('commission_type','=','percent'),('commission_type','=',False)],
+                                   'required':[('commission_type','=','amount')]
+                                   }"
+                                />
+                                <field name="commission_percentage"
+                                       attrs="{
+                                   'invisible':['|',('commission_type','=','amount'),('commission_type','=',False)],
+                                   'required':[('commission_type','=','percent')]
+                                   }"
+                                />
+                            </group>
+
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="withdraw_request_commission_tree_view" model="ir.ui.view">
+            <field name="name">Withdraw Commission</field>
+            <field name="model">withdraw.request.commission</field>
+            <field name="arch" type="xml">
+                <tree string="Commissions">
+                    <field name="create_date"/>
+                    <field name="commission_type"/>
+                    <field name="range_from"/>
+                    <field name="range_to"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--        <record id="ModelName_search_view" model="ir.ui.view">-->
+        <!--            <field name="name">ProjectName.ModelName.search</field>-->
+        <!--            <field name="model">ProjectName.ModelName</field>-->
+        <!--            <field name="arch" type="xml">-->
+        <!--                <search string="ModelTitle">-->
+        <!--                    <group expand="1" string="Group By">-->
+        <!--                        <filter string="Example Field" name="example_field" domain="[]"-->
+        <!--                                context="{'group_by':'example_field'}"/>-->
+        <!--                    </group>-->
+        <!--                </search>-->
+        <!--            </field>-->
+        <!--        </record>-->
+
+
+        <record id="customer_withdrawal_request_commission_action_window" model="ir.actions.act_window">
+            <field name="name">Withdraw Configurations</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">withdraw.request.commission</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    There is no Commissions Configuration click Create to add new One.
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Withdraw Configuration"
+                  id="customer_withdrawal_request_commission_main_menu"
+                  parent="customer_withdrawal_request_root_menu"
+                  action="customer_withdrawal_request_commission_action_window"
+                  groups="fastrak.withdrawal_manager"
+        />
+
+
+    </data>
+</odoo>

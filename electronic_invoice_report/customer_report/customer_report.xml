@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_print_customer_form" model="ir.ui.view">
+        <field name="name">electronic.customer.report</field>
+        <field name="model">electronic.customer.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Electronic Customer Report">
+                <field name="electronic_customer_report_printed" invisible="1"/>
+
+                <group attrs="{'invisible':[('electronic_customer_report_printed','=',True)]}">
+
+                    <group>
+                        <field name="from_date" required="1" style="width:200px;"/>
+                    </group>
+
+                    <group>
+                        <field name="to_date" required="1" style="width:200px;"/>
+                    </group>
+
+                </group>
+
+                <group attrs="{'invisible':[('electronic_customer_report_printed','=',False)]}">
+                    <field name="file_name" invisible="1"/>
+                    <field name="electronic_customer_file" readonly="1" filename="file_name"/>
+                </group>
+
+                <footer>
+                    <button string='Print' name="action_print_electronic_customer"
+                            type="object" class="btn-primary"
+                            attrs="{'invisible':[('electronic_customer_report_printed','=',True)]}"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_print_electronic_customer" model="ir.actions.act_window">
+        <field name="name">Electronic Customer Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">electronic.customer.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_print_menu_print_electronic_customer_report_parent"
+              parent="contacts.menu_contacts"
+    />
+
+    <menuitem id="menu_print_electronic_customer_report" action="action_print_electronic_customer"
+              sequence="205" parent="contacts.menu_contacts" name="Electronic Customer Report"/>
+
+</odoo>

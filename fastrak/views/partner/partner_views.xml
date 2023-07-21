@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+    <record id="fastrak_res_partner_custom_field" model="ir.ui.view">
+        <field name="name">Fastrak Partner Extra Fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <h1>
+                    <field name="last_name" placeholder="Last Name"
+                           attrs="{'required' : [('company_type', '=', 'person')]}"/>
+                </h1>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="placeholder">First Name</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='last_name']" position="after">
+                <h1>
+                    <field name="customer_company_name" placeholder="Company Name"/>
+                </h1>
+            </xpath>
+
+            <!-- Change tax id name -->
+            <!--            <xpath expr="//field[@name='vat']" position="attributes">-->
+            <!--                <attribute name="string">Vat ID</attribute>-->
+            <!--            </xpath>-->
+
+
+            <!-- Add CR Field & is premium user field -->
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="cr" placeholder="e.g. CR0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
+                <field name="is_premium_user"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Custom Partner search add extra search filed 'id' -->
+    <record id="custom_partner_search_filter" model="ir.ui.view">
+        <field name="name">custom.res.partner.search.filter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="id" filter_domain="[('id', 'like', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fastrak_res_partner_required_field" model="ir.ui.view">
+        <field name="name">Fastrak Partner Required Fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+        </field>
+
+    </record>
+
+
+</odoo>

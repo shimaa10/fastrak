@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_print_invoice_summary_form" model="ir.ui.view">
+        <field name="name">electronic.invoice.report</field>
+        <field name="model">electronic.invoice.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Electronic Invoice Report">
+                <field name="electronic_invoice_report_printed" invisible="1"/>
+
+                <group attrs="{'invisible':[('electronic_invoice_report_printed','=',True)]}">
+
+                    <group>
+                        <field name="from_date" required="1" style="width:200px;"/>
+                    </group>
+
+                    <group>
+                        <field name="to_date" required="1" style="width:200px;"/>
+                    </group>
+
+                </group>
+
+                <group attrs="{'invisible':[('electronic_invoice_report_printed','=',False)]}">
+                    <field name="file_name" invisible="1"/>
+                    <field name="electronic_invoice_file" readonly="1" filename="file_name"/>
+                </group>
+
+                <footer>
+                    <button string='Print' name="action_print_electronic_invoice"
+                            type="object" class="btn-primary"
+                            attrs="{'invisible':[('electronic_invoice_report_printed','=',True)]}"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_print_electronic_invoice" model="ir.actions.act_window">
+        <field name="name">Electronic Invoice Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">electronic.invoice.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_print_electronic_invoice_report" action="action_print_electronic_invoice"
+              sequence="205" parent="account.menu_finance_reports"/>
+
+</odoo>

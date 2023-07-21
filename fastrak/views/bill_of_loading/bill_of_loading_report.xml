@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <report string="Bill Printout"
+            id="action_bill_of_loading_report"
+            model="fastrak.bill.of.loading"
+            menu="True"
+            report_type="qweb-pdf"
+            name="fastrak.bill_of_loading_report"
+            file="fastrak.bill_of_loading_report"
+            paperformat="fastrak.paperformat_fastrak"
+
+            print_report_name="(object._get_report_filename())"
+    />
+
+    <template id="bill_of_loading_report_document">
+        <t t-call="web.html_container">
+
+            <t t-call="fastrak.custom_external_layout_standard">
+                <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+                <t t-set="o" t-value="o.with_context(lang=lang)"/>
+
+                <div class="page">
+
+                    <div class="col-12">
+
+                        <h2 class="text-left mb-2" style="color:black">
+                            <strong>BOL:</strong>
+                            <span class="m-0" t-field="o.order_id"/>
+                        </h2>
+                        <h4>
+                            <strong>Customer:</strong>
+                            <span class="m-0" t-field="o.customer.display_name"/>
+                        </h4>
+
+                        <table class="custom_table" name="address_table">
+                            <thead>
+                                <tr class="text-center" style="background:lightgray">
+                                    <th>
+                                        <span>From (Shipper)</span>
+                                    </th>
+
+                                    <th>
+                                        <span>To (Receiver)</span>
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span>
+                                            <span t-field="o.pickup_address"/>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span>
+                                            <span t-field="o.delivery_address"/>
+                                        </span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+                        <table class="custom_table" name="shipping_info_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="12" class="text-center" style="background:lightgray">
+                                        <span>Shipping Info</span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="invoice_tbody">
+                                <!--Weight & number of pieces-->
+                                <tr>
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Weight :</strong>
+                                            <span t-field="o.weight"/>
+                                        </span>
+                                    </td>
+
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Number of Pieces :</strong>
+                                            <span t-field="o.number_of_pieces"/>
+                                        </span>
+                                    </td>
+
+                                </tr>
+
+                                <!--Delivery Time & Payment Method-->
+                                <tr>
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Delivery Time :</strong>
+                                            <span t-field="o.delivery_time"/>
+                                        </span>
+                                    </td>
+
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Payment Method :</strong>
+                                            <span t-field="o.payment_method"/>
+                                        </span>
+                                    </td>
+
+                                </tr>
+
+                                <!--Delivery Type & Payment Type-->
+                                <tr>
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Delivery Type :</strong>
+                                            <span t-field="o.delivery_type"/>
+                                        </span>
+                                    </td>
+
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Payment Type :</strong>
+                                            <t t-if="o.is_pos_payment">
+                                                <span>Visa</span>
+                                            </t>
+
+                                            <t t-else="not o.is_pos_payment">
+                                                <span>Cash</span>
+                                            </t>
+                                        </span>
+                                    </td>
+
+                                </tr>
+
+                                <!--Has Fragile& Shipping Fees-->
+                                <tr>
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Has Fragile :</strong>
+
+                                            <t t-if="o.has_fragile">
+                                                <span>Yes</span>
+                                            </t>
+
+                                            <t t-else="not o.has_fragile">
+                                                <span>No</span>
+                                            </t>
+
+                                        </span>
+                                    </td>
+
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Shipping Fees :</strong>
+                                            <span t-field="o.shipping_fees"/>
+                                        </span>
+                                    </td>
+                                </tr>
+
+
+                                <!-- Money Collected & Insurance Fees-->
+                                <tr>
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Money Collected :</strong>
+                                            <span t-field="o.money_collected"/>
+                                        </span>
+                                    </td>
+
+                                    <td colspan="6">
+                                        <span>
+                                            <strong>Insurance Fees :</strong>
+                                            <span t-field="o.insurance_fees"/>
+                                        </span>
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+
+                        <table class="custom_table" name="address_table">
+                            <thead>
+                                <tr colspan="2" class="text-center" style="background:lightgray">
+                                    <th>
+                                        <span>Billing Information</span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span colspan="2">
+                                            <strong>
+                                                Invoice No. :
+                                            </strong>
+                                            <span t-field="o.invoice_id"/>
+                                        </span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+            </t>
+        </t>
+
+    </template>
+
+    <template id="fastrak.bill_of_loading_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="fastrak.bill_of_loading_report_document" t-lang="o.customer.lang"/>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

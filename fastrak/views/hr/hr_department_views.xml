@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+    <record id="fastrak_custom_hr_department" model="ir.ui.view">
+        <field name="name">fastrak.custom.department</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="is_operation_department" groups="fastrak.fastrak_configuration_manager"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

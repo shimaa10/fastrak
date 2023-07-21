@@ -1,0 +1,363 @@
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="fastrak_bill_of_loading_tree_view" model="ir.ui.view">
+            <field name="name">fastrak list</field>
+            <field name="model">fastrak.bill.of.loading</field>
+            <field name="arch" type="xml">
+                <tree decoration-muted="order_status == 'draft'"
+                      decoration-info="order_status == 'audited'"
+                      decoration-success="order_status == 'done'"
+                      decoration-danger="order_status == 'refund'"
+                      default_order="create_date desc"
+                      string="Bill of loading"
+                >
+
+                    <field name="id"/>
+                    <field name="create_date"/>
+                    <field name="order_id"/>
+                    <field name="customer" optional="show"/>
+                    <field name="order_status" optional="show"/>
+                    <field name="is_pos_payment" optional="show"/>
+                    <field name="vat" optional="hide"/>
+                    <field name="insurance_fees" optional="hide"/>
+                    <field name="shipping_fees" optional="show" sum="Total Shipping"/>
+                    <field name="money_collected" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Form View -->
+        <record id="fastrak_bill_of_loading_form_view" model="ir.ui.view">
+            <field name="name">fastrak.form.view</field>
+            <field name="model">fastrak.bill.of.loading</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+
+                        <button name="confirm_bill_loading" type="object" string="Confirm" class="oe_highlight"
+                                attrs="{'invisible':[('order_status','in',('done','refund','canceled','audited'))]}"
+                                groups="fastrak.fastrak_operation_assistant"
+                        />
+
+                        <!--                        <button name="reset_to_draft" type="object" string="Reset To Draft"-->
+                        <!--                                attrs="{'invisible':[('order_status','not in',('canceled',))]}"-->
+                        <!--                                groups="fastrak.fastrak_operation_manager"-->
+                        <!--                        />-->
+
+                        <button name="refund_bill_loading" type="object" string="Refund" class="btn btn-danger"
+                                attrs="{'invisible':[('order_status','in',('draft','refund','canceled','audited'))]}"
+                                groups="fastrak.fastrak_operation_manager"
+                                confirm="Confirm Refund ?"
+                        />
+
+
+                        <button name="cancel_bill_loading" type="object" string="Cancel" class="btn btn-warning"
+                                attrs="{'invisible':[('order_status','in',('done','refund','canceled','audited'))]}"
+                                groups="fastrak.fastrak_operation_manager"
+                                confirm="Confirm Cancellation ?"
+
+                        />
+
+                        <!-- Money Collection Button-->
+                        <button name="create_money_collection_entry" type="object"
+                                string="Create Money Collection Entry"
+                                attrs="{'invisible':[ '|',('money_collected','=',0),('money_collection_entry','!=',False)]}"
+                                groups="fastrak.fastrak_operation_assistant"
+                        />
+
+                        <!-- Register Payment Button-->
+                        <button name="register_payment" type="object" string="Register payment"
+                                attrs="{
+                                'invisible':[
+                                '|',('order_status','!=','done'),
+                                '|',('payment_method','=','on_credit'),
+                                '|',('payment_collection_entry','!=',False),
+                                ('invoice_payment_collection','!=',False)
+                                ]}"
+                                groups="fastrak.fastrak_operation_assistant"
+                        />
+
+
+                        <button name="reset_to_draft" type="object" string="Reset To Draft"
+                                class="btn btn-warning"
+                                attrs="{
+                                'invisible':
+                                [
+                                '|',('money_collection_entry','!=',False),
+                                '|',('payment_collection_entry','!=',False),
+                                '|',('invoice_payment_collection','!=',False),
+                                ('order_status','in',['audited','draft','refund','canceled'])
+                                ]
+                                }"
+                                groups="fastrak.fastrak_audit_and_lock_bol_manager"
+                        />
+
+                        <button name="audited_bill_of_loading" type="object" string="Audit &amp; Lock"
+                                class="btn btn-info"
+                                attrs="{'invisible':[('order_status','not in',('done'))]}"
+                                groups="fastrak.fastrak_audit_and_lock_bol_manager"
+                                confirm="Confirm Auditing &amp; Lock ?"
+
+                        />
+
+                    </header>
+
+                    <field name="active" invisible="1"/>
+
+                    <widget name="web_ribbon" title="Draft" bg_color="bg-dark"
+                            attrs="{'invisible': [('order_status', '!=', 'draft')]}"/>
+
+                    <widget name="web_ribbon" title="Confirmed"
+                            attrs="{'invisible': [('order_status', '!=', 'done')]}"/>
+
+                    <widget name="web_ribbon" title="Audited" bg_color="bg-info"
+                            attrs="{'invisible': [('order_status', '!=', 'audited')]}"/>
+
+                    <widget name="web_ribbon" title="Refund" bg_color="bg-danger"
+                            attrs="{'invisible': [('order_status', '!=', 'refund')]}"
+                    />
+
+                    <widget name="web_ribbon" title="Canceled" bg_color="bg-warning"
+                            attrs="{'invisible': [('order_status', '!=', 'canceled')]}"/>
+
+
+                    <group string="Info">
+
+                        <group>
+                            <field name="create_date" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+
+                            <field name="order_id" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="customer" options="{'no_create':True}"
+                                   attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+
+                            <field name="invoice_id" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <hr/>
+
+                            <field name="invoice_payment_collection"
+                                   attrs="{
+                                   'readonly':True,
+                                   'invisible':['|',('is_pos_payment','=',False),('payment_method','=','on_credit')]
+                                   }"/>
+
+                            <field name="payment_collection_entry"
+                                   attrs="{
+                                   'readonly':True,
+                                   'invisible':['|',('is_pos_payment','=',True),('payment_method','=','on_credit')]
+                                   }"/>
+
+                            <field name="order_status" attrs="{'readonly':True}"/>
+                            <field name="order_delivery_status" attrs="{'readonly':True}"/>
+                            <field name="order_payment_status" attrs="{'readonly':True}"/>
+
+                        </group>
+
+                        <group>
+                            <!--                            Right Side Group-->
+                            <field name="weight" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="delivery_time" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="delivery_type" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="has_fragile" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="number_of_pieces" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <hr/>
+                            <field name="payment_method" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                            <field name="money_collection_payment_method"
+                                   attrs="{'readonly':[('order_status','not in',('draft',)),('money_collection_entry','!=',False)]}"/>
+
+                            <field name="is_pos_payment" string="Pos Payment (Visa)"
+                                   attrs="{'readonly':[
+                                   '|','&amp;',('payment_method','=','on_pickup'),('order_delivery_status','in',('picked','delivered')),
+                                   '&amp;',('payment_method','=','on_delivery'),('order_delivery_status','=','delivered')
+                                   ],
+                                   'invisible':[('payment_method','=','on_credit')]}"
+                            />
+                        </group>
+
+                    </group>
+
+                    <notebook>
+                        <page string="Service Info">
+
+                            <field name="service_line_ids" widget="section_and_note_one2many" mode="tree,kanban,form"
+                                   attrs="{'readonly':[('order_status','not in',('draft',))]}">
+                                <tree editable="bottom" default_order="id desc">
+                                    <field name="product_id" domain="[('is_main_service_product','=',True)]"
+                                           options="{'no_create':True}"/>
+                                    <field name="amount"/>
+                                    <field name="description"/>
+                                    <field name="service_type"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Monetary Info">
+                            <group string="Money Collection Section">
+
+                                <group>
+
+                                    <field name="money_collection_bank_commission_fees"
+                                           string="Bank Commission Fees (%)"
+                                           attrs="{
+                                           'readonly':[('order_status','not in',('draft',)),('money_collection_entry','!=',False)],
+                                           'invisible':[('money_collection_payment_method','=','cash')]
+                                           }"
+                                    />
+
+                                    <field name="money_collected"
+                                           attrs="{'readonly':[('order_status','not in',('draft',)),('money_collection_entry','!=',False)]}"
+                                    />
+                                </group>
+
+                                <group>
+                                    <field name="money_collection_entry" attrs="{'readonly':True}"/>
+                                </group>
+                            </group>
+
+                            <group string="Shipping Fees Section">
+                                <!-- Money Collection Section-->
+                                <group>
+                                    <field name="bank_commission_fees" string="Shipping Fees Bank Commission (%)"
+                                           attrs="{
+                                           'readonly':[('order_status','not in',('draft',))],
+                                           'invisible':[('is_pos_payment','=',False)]
+                                           }"
+                                    />
+                                </group>
+
+                                <group>
+                                    <field name="bank_commission_entry"
+                                           attrs="{'readonly':True,'invisible':[('is_pos_payment','=',False)]}"/>
+                                </group>
+
+
+                                <!-- End Money Collection Charges Section -->
+
+                                <!-- Bank Charges Section -->
+                                <!--                                <group>-->
+                                <!--                                    <field name="bank_commission_fees" string="Bank Commission Fees (%)"-->
+                                <!--                                           attrs="{-->
+                                <!--                                           'readonly':[('order_status','not in',('draft',))],-->
+                                <!--                                           'invisible':[('is_pos_payment','=',False)]-->
+                                <!--                                           }"-->
+
+                                <!--                                    />-->
+
+                                <!--                                    <field name="money_collection_bank_commission_fees"-->
+                                <!--                                           string="Money Collection Bank Commission Fees (%)"-->
+                                <!--                                           attrs="{-->
+                                <!--                                           'readonly':[('order_status','not in',('draft',))],-->
+                                <!--                                           'invisible':[('is_pos_payment','=',False)]-->
+                                <!--                                           }"-->
+                                <!--                                    />-->
+                                <!--                                </group>-->
+
+
+                                <!-- End Bank Charges Section -->
+
+                                <group>
+
+                                    <field name="insurance_fees"
+                                           attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                                    <field name="shipping_fees"
+                                           attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+
+                                    <field name="vat"
+                                           attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+
+                                    <field name="discount_amount"
+                                           attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+
+                                </group>
+
+
+                            </group>
+                        </page>
+
+                        <page string="Shipping Address Info">
+                            <group>
+
+                                <group string="Pickup Info">
+                                    <field name="pickup_address" nolabel="1"/>
+                                </group>
+
+                                <group string="Delivery Info">
+                                    <field name="delivery_address" nolabel="1"/>
+                                </group>
+
+                            </group>
+                        </page>
+
+
+                        <page string="Description">
+                            <field name="description" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
+                        </page>
+
+
+                        <page string="Assigned Drivers">
+                            <field name="trips_ids" widget="section_and_note_one2many" mode="tree,kanban,form"
+                                   attrs="{'readonly':[('order_status','in',('canceled','refund','audited'))]}"
+                            >
+                                <tree editable="bottom" string="Journal Items" default_order="id">
+                                    <field name="driver_id" options="{'no_create':True}" required="1"/>
+                                    <field name="trip_status"/>
+                                    <field name="trip_description"/>
+                                    <field name="create_date"/>
+                                </tree>
+                            </field>
+                        </page>
+
+
+                        <page string="Cancellation Reason">
+                            <group>
+                                <group>
+                                    <field name="cancellation_reason" options="{'no_create':True,'no_open':True}"
+                                           attrs="{'readonly':[('order_status','in',('refund','audited'))]}"
+                                    />
+                                </group>
+                                <group>
+                                    <field name="refund_reason_comment"
+                                           attrs="{'readonly':[('order_status','in',('refund','audited'))]}"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Notes">
+                            <group>
+                                <field nolabel="1" name="extra_notes"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+
+                </form>
+
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="bill_of_loading_action_window">
+            <field name="name">Bill Of Loading</field>
+            <field name="res_model">fastrak.bill.of.loading</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- Top Root menu item -->
+
+        <menuitem name="Bill of Loading" id="bill_of_loading_root_menu"/>
+
+        <!-- menu categories -->
+
+        <menuitem name="Bill of Loading" id="bill_of_loading_main_menu" parent="bill_of_loading_root_menu"
+                  action="bill_of_loading_action_window" sequence="9"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="crm_lead_form_inherit" model="ir.ui.view">
+            <field name="name">fastrak.lead.form.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']/../.." position="after">
+                    <hr/>
+                    <group>
+                        <group>
+                            <field name="expected_orders_count"/>
+                        </group>
+<!--                        <group>    <field name="expected_amount"/></group>-->
+                    </group>
+
+
+                    <group>
+                        <group>
+                            <field name="lead_start_date"/>
+                        </group>
+                        <group>
+                            <field name="lead_end_date"/>
+                        </group>
+                    </group>
+                    <!--                    <div class="o_row d-flex">-->
+                    <!--                        <field name="expected_orders_count" class="oe_inline"/>-->
+                    <!--                        <field name="expected_amount" class="oe_inline"/>-->
+                    <!--                    </div>-->
+
+
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                    <attribute name="required">True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='team_id']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                    <attribute name="required">True</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+
+</odoo>

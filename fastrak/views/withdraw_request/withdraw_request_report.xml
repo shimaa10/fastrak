@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <report
+                id="report_action_withdraw_request"
+                model="withdraw.request"
+                menu="True"
+                string="Request Printout"
+                report_type="qweb-pdf"
+                name="fastrak.withdraw_request_report"
+                file="fastrak.withdraw_request_report"
+                paperformat="fastrak.paperformat_fastrak"
+                print_report_name="(object._get_report_filename())"
+
+        />
+
+        <template id="withdraw_request_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="fastrak.custom_external_layout_standard">
+                        <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+                        <div class="page">
+
+                            <div class="col-12">
+                                <div id="informations" class=" mt32 mb32">
+                                    <div class="col-12">
+
+                                        <span class="float-left col-12 mb-1">
+                                            <strong>Customer:</strong>
+                                            <span style="font-size:17px" t-field="doc.customer.display_name"/>
+                                        </span>
+
+
+                                        <span class="span_splitter float-left col-6 mw-100 mb-2">
+                                            <strong>Request Time:</strong>
+                                            <span t-field="doc.request_timestamp"/>
+
+                                        </span>
+
+<!--                                        <span class="span_splitter float-right col-6 mw-100 mb-2">-->
+<!--                                            <strong>Print Date:</strong>-->
+<!--                                            <span t-esc="doc.print_date"/>-->
+<!--                                            <br/>-->
+<!--                                            <strong>Due At:</strong>-->
+<!--                                            <span t-esc="doc.due_at"/>-->
+<!--                                        </span>-->
+                                    </div>
+
+
+
+                                </div>
+
+<!--                                <table class="custom_table" name="address_table">-->
+<!--                                    <thead>-->
+<!--                                        <tr class="text-center" style="background:lightgray">-->
+<!--                                            <th>-->
+<!--                                                <span>No.</span>-->
+<!--                                            </th>-->
+<!--                                            <th>-->
+<!--                                                <span>Date</span>-->
+<!--                                            </th>-->
+<!--                                            <th>-->
+<!--                                                <span>Name</span>-->
+<!--                                            </th>-->
+
+
+<!--                                            <th>-->
+<!--                                                <span>BOL</span>-->
+<!--                                            </th>-->
+
+<!--                                            <th>-->
+<!--                                                <span>Weight</span>-->
+<!--                                            </th>-->
+
+<!--                                            <th>-->
+<!--                                                <span>Number of Items</span>-->
+<!--                                            </th>-->
+
+<!--                                            <th>-->
+<!--                                                <span>Delivery Type</span>-->
+<!--                                            </th>-->
+
+<!--                                            <th>-->
+<!--                                                <span>Delivery Time</span>-->
+<!--                                            </th>-->
+
+<!--                                            <th>-->
+<!--                                                <span>Net Total</span>-->
+<!--                                            </th>-->
+
+
+<!--                                        </tr>-->
+
+<!--                                    </thead>-->
+
+<!--                                    <tbody class="text-center">-->
+<!--                                        <t t-set="line_number" t-value="1"/>-->
+
+<!--                                        <t t-foreach="doc.invoice_ids" t-as="invoice_line">-->
+
+<!--                                            <tr>-->
+<!--                                                <td>-->
+<!--                                                    <span t-esc="line_number"/>-->
+<!--                                                    <t t-set="line_number" t-value="line_number+1"/>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice.create_date"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice.name"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).order_id"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).weight"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).number_of_pieces"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).delivery_type"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).delivery_time"/>-->
+<!--                                                    </span>-->
+<!--                                                </td>-->
+
+<!--                                                <td>-->
+<!--                                                    <span>-->
+<!--                                                        <span t-field="invoice_line.invoice.amount_total"/>-->
+
+<!--                                                    </span>-->
+<!--                                                </td>-->
+<!--                                            </tr>-->
+<!--                                        </t>-->
+
+<!--                                    </tbody>-->
+
+<!--                                    <tfooter>-->
+<!--                                        &lt;!&ndash; Total Only &ndash;&gt;-->
+<!--                                        <tr style="background:lightgray" class="text-center">-->
+<!--                                            <td colspan="8">-->
+<!--                                                <span>Net Total:-->
+<!--                                                    <strong>-->
+<!--                                                        <span t-esc="doc._get_footer_totals().get('net_total_amount_in_words')"/>-->
+<!--                                                    </strong>-->
+<!--                                                </span>-->
+<!--                                            </td>-->
+
+<!--                                            <td>-->
+<!--                                                <span t-esc="doc._get_footer_totals().get('net_total_amount')"/>-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+<!--                                        &lt;!&ndash; Discount &ndash;&gt;-->
+
+<!--                                        <tr class="text-center">-->
+<!--                                            <td colspan="8">-->
+<!--                                                <span>Discount:-->
+<!--                                                    <strong>-->
+<!--                                                        <span t-esc="doc._get_footer_totals().get('total_discount_in_words')"/>-->
+<!--                                                    </strong>-->
+<!--                                                </span>-->
+<!--                                            </td>-->
+
+<!--                                            <td>-->
+<!--                                                <span t-esc="doc._get_footer_totals().get('total_discount')"/>-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+
+<!--                                        <tr class="text-center">-->
+<!--                                            <td colspan="8">-->
+<!--                                                <span>Vat 14%</span>-->
+<!--                                            </td>-->
+
+<!--                                            <td>-->
+<!--                                                <span t-esc="doc._get_footer_totals().get('total_vat')"/>-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+
+<!--                                        <tr style="background:lightgray" class="text-center">-->
+<!--                                            <td colspan="8">-->
+<!--                                                <span>Total Invoice Amount:-->
+<!--                                                    <strong>-->
+<!--                                                        <span t-esc="doc._get_footer_totals().get('gross_total_amount_in_words')"/>-->
+<!--                                                    </strong>-->
+<!--                                                </span>-->
+<!--                                            </td>-->
+
+<!--                                            <td>-->
+<!--                                                <span t-esc="doc._get_footer_totals().get('gross_total_amount')"/>-->
+<!--                                            </td>-->
+
+<!--                                        </tr>-->
+<!--                                    </tfooter>-->
+
+<!--                                </table>-->
+
+                            </div>
+
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

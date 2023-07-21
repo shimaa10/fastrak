@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="api_request_logger_view_form" model="ir.ui.view">
+        <field name="name">api_request_logger_view_form</field>
+        <field name="model">api.log</field>
+        <field name="arch" type="xml">
+            <form string="api_request_logger_form">
+                <sheet>
+                    <group string="Request">
+                        <field name="create_date"/>
+                        <field name="request"/>
+                        <field name="request_resource"/>
+                        <field name="request_scheme"/>
+                        <field name="request_path"/>
+                        <field name="request_method"/>
+                        <field name="request_remote_address"/>
+                        <field name="request_headers"/>
+                        <field name="request_parameters"/>
+
+                    </group>
+
+                    <group string="Response">
+                        <field name="response_data"/>
+                        <field name="response_code"/>
+                        <field name="response_msg"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_request_logger_tree_view" model="ir.ui.view">
+        <field name="name">Api Log</field>
+        <field name="model">api.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+                <field name="request"/>
+                <field name="request_resource"/>
+                <field name="request_path"/>
+                <field name="request_method"/>
+                <field name="response_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_request_logger_action" model="ir.actions.act_window">
+        <field name="name">Api Log</field>
+        <field name="res_model">api.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="api_request_logger_root_menu" name="Api Log" groups="fastrak.fastrak_api_log_access"/>
+
+    <menuitem id="api_request_logger_menu_log" parent="api_request_logger_root_menu" name="Log"
+              action="api_request_logger_action"/>
+
+</odoo>

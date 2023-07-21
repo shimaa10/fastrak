@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fastrak_report_group_invoice" model="ir.ui.view">
+        <field name="name">Group Invoice Report</field>
+        <field name="model">fastrak.report.group.invoice</field>
+
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                    </group>
+
+                    <group>
+                        <field name="date_to"/>
+                    </group>
+
+
+                </group>
+                <group>
+
+                    <group>
+                        <field name="target_partner" options="{'no_create':True,'no_create_edit':True,'no_open':True}"/>
+                    </group>
+
+                    <group>
+                        <field name="state"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+                    <button name="print_report" string="Print" type="object" default_focus="1" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-default" special="cancel"/>
+                </footer>
+            </form>
+
+        </field>
+    </record>
+
+
+    <record id="action_group_invoice_report_menu" model="ir.actions.act_window">
+        <field name="name">Group Invoice Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fastrak.report.group.invoice</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="fastrak_report_group_invoice"/>
+        <field name="target">new</field>
+        <!--        <field name="binding_model_id" ref="fastrak.model_fastrak_bill_of_loading"/>-->
+        <!--        <field name="binding_type">report</field>-->
+    </record>
+
+    <menuitem
+            id="menu_group_invoice_wizard"
+            name="Group Invoice Report"
+            parent="account.menu_finance_reports"
+            action="action_group_invoice_report_menu"
+            groups="fastrak.fastrak_operation_assistant"
+    />
+
+</odoo>

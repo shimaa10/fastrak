@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_bill_of_loading">
+        <t t-call="web.html_container">
+
+            <t t-call="fastrak.custom_external_layout_standard">
+                <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+
+                <div class="page">
+
+                    <div class="col-12">
+
+                        <div id="informations" class=" mt32 mb32">
+                            <div class="col-12">
+
+                                <t t-if="headers['partner_name']">
+                                    <h4 class="text-center">
+                                        <strong>Customer:</strong>
+                                        <span class="m-0" t-esc="headers['partner_name']"/>
+                                    </h4>
+                                </t>
+
+                                <t t-else="">
+                                    <h5 class="text-center">
+                                        <strong>Customer:</strong>
+                                        All
+                                    </h5>
+                                </t>
+
+                                <t t-if="headers['order_status']">
+                                    <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">
+                                        <strong>Status:</strong>
+                                        <t t-esc="headers['order_status']"/>
+                                    </span>
+                                </t>
+
+                            </div>
+
+                            <br/>
+                            <div class="col-12">
+                                <t t-if="headers['date_from']">
+                                    <span class="span_splitter float-left col-6 mw-100 mb-2">
+                                        <strong>From:</strong>
+                                        <t t-esc="headers['date_from']"/>
+                                    </span>
+                                </t>
+
+                                <t t-if="headers['date_to']">
+
+                                    <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">
+                                        <strong>To:</strong>
+                                        <t t-esc="headers['date_to']"/>
+                                    </span>
+                                </t>
+                            </div>
+
+                            <!--                            <div class="=col-12">-->
+                            <!--                                <t t-if="headers['order_status']">-->
+                            <!--                                    <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">-->
+                            <!--                                        <strong>Status:</strong>-->
+                            <!--                                        <t t-esc="headers['order_status']"/>-->
+                            <!--                                    </span>-->
+                            <!--                                </t>-->
+                            <!--                            </div>-->
+
+                        </div>
+
+                        <table class="custom_table" name="address_table">
+                            <thead>
+                                <tr class="text-center" style="background:lightgray">
+                                    <th>
+                                        <span>No.</span>
+                                    </th>
+                                    <th>
+                                        <span>Order</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Customer</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Date</span>
+                                    </th>
+                                    <th>
+                                        <span>Amount</span>
+                                    </th>
+                                    <th>
+                                        <span>Money Collected</span>
+                                    </th>
+
+                                    <th>
+                                        <span>State</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Delivery State</span>
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="text-center">
+                                <t t-set="line_number" t-value="1"/>
+
+                                <t t-foreach="docs" t-as="doc">
+
+                                    <tr>
+                                        <td>
+                                            <span t-esc="line_number"/>
+                                            <t t-set="line_number" t-value="line_number+1"/>
+                                        </td>
+
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['order_name']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['customer_name']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['create_date']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['total_amount']"/>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['money_collected']"/>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['order_status']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="doc['order_delivery_status']"/>
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                </t>
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+            </t>
+        </t>
+
+
+    </template>
+
+</odoo>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_crm_target">
+        <t t-call="web.html_container">
+            <t t-call="fastrak.custom_external_layout_standard">
+
+                <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+                <t t-foreach="docs" t-as="doc">
+
+                    <div class="page">
+                        <div class="col-12">
+                            <div id="informations" class="mt-4 mb-4">
+
+                                <div class="col-12">
+                                    <t t-if="doc['target_name']">
+                                        <h5 class="text-center">
+                                            <strong>Name:</strong>
+                                            <t t-esc="doc['target_name']"/>
+                                        </h5>
+                                    </t>
+                                </div>
+
+                                <div class="col-12">
+                                    <t t-if="doc['date_from']">
+                                        <span class="span_splitter float-left col-6 mw-100 mb-2">
+                                            <strong>From:</strong>
+                                            <t t-esc="doc['date_from']"/>
+                                        </span>
+                                    </t>
+
+                                    <t t-if="doc['date_to']">
+                                        <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">
+                                            <strong>To:</strong>
+                                            <t t-esc="doc['date_to']"/>
+                                        </span>
+                                    </t>
+
+                                </div>
+
+                                <div class="col-12">
+                                    <t t-if="doc['sales_team']">
+                                        <span class="span_splitter float-left col-6 mw-100 mb-2 text-left">
+                                            <strong>Sales Team:</strong>
+                                            <span class="m-0" t-esc="doc['sales_team']"/>
+                                        </span>
+
+                                    </t>
+
+                                    <t t-if="doc['target_orders']">
+                                        <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">
+                                            <strong>Sales Team Target :</strong>
+                                            <span class="m-0" t-esc="doc['target_orders']"/>
+                                        </span>
+                                    </t>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <t t-if="doc['sales_person']">
+                                        <span class="span_splitter float-left col-6 mw-100 mb-2 text-left">
+                                            <strong>Sales Person:</strong>
+                                            <t t-esc="doc['sales_person'][1]"/>
+                                        </span>
+                                    </t>
+
+                                    <t t-else="">
+                                        <span class="span_splitter float-left col-6 mw-100 mb-2 text-left">
+                                            <strong>Sales Persons:</strong>
+                                            <t t-foreach="doc['sales_members']" t-as="sales_member">
+                                                <small t-esc="sales_member.display_name"/>,
+                                            </t>
+                                        </span>
+                                    </t>
+
+                                </div>
+
+                                <br/>
+
+                            </div>
+
+                            <table class="custom_table text-center" name="address_table">
+                                <thead>
+                                    <tr class="text-center" style="background:lightgray">
+                                        <th>
+                                            <span>No.</span>
+                                        </th>
+                                        <th>
+                                            <span>Customer Code</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Customer Name</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Total Orders</span>
+                                        </th>
+
+                                    </tr>
+                                </thead>
+
+                                <tbody class="text-center">
+                                    <t t-set="line_number" t-value="1"/>
+                                    <t t-set="total_orders_count" t-value="0"/>
+
+                                    <t t-foreach="doc['customers_orders']" t-as="customer_order">
+
+                                        <tr>
+                                            <td>
+                                                <span t-esc="line_number"/>
+                                                <t t-set="line_number" t-value="line_number+1"/>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-esc="customer_order['customer_code']"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-esc="customer_order['customer_name']"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <t t-set="total_orders_count"
+                                                       t-value="total_orders_count+customer_order['total_orders']"/>
+
+                                                    <span t-esc="customer_order['total_orders']"/>
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+                                </tbody>
+
+                                <tfooter>
+                                    <tr style="background:lightgray">
+                                        <td colspan="3">
+                                            Total Orders
+                                        </td>
+                                        <td>
+                                            <span t-esc="total_orders_count"/>
+                                        </td>
+                                    </tr>
+                                </tfooter>
+
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <p style="page-break-before:always;"></p>
+
+
+                </t>
+            </t>
+        </t>
+
+    </template>
+
+</odoo>

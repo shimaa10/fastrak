@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="financial_reports_custom_paper_format" model="report.paperformat">
+            <field name="name">Financial Reports Paper Format</field>
+            <!--        <field name="default" eval="True"/>-->
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">40.00</field>
+            <field name="margin_bottom">28.00</field>
+            <field name="margin_left">7.00</field>
+            <field name="margin_right">7.00</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+                id="action_trial_balance_report"
+                model="account.trial.balance.report"
+                string="Trial Balance"
+                report_type="qweb-pdf"
+                name="trial_balance_report.report_trial_balance_document"
+                file="trial_balance_report.report_trial_balance_document"
+                paperformat="trial_balance_report.financial_reports_custom_paper_format"
+        />
+
+    </data>
+</odoo>

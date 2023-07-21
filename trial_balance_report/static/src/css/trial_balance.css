@@ -1,0 +1,15 @@
+.report-header{
+    text-align:center; background-color: #ccc
+    }
+
+.dr-cr-border{
+    width: 150px;border: 1px solid #ccc;text-align:right;
+    }
+
+.border{
+    border: 1px solid #ccc;
+    }
+
+.foooter{
+    font-weight: bold;background-color: #ccc
+    }

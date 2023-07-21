@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <!-- Cost Center Form View -->
+        <record id="cost_centers_view_form" model="ir.ui.view">
+            <field name="name">Cost Centers</field>
+            <field name="model">cost.centers</field>
+            <field name="arch" type="xml">
+                <form name="Cost Centers">
+                    <sheet>
+                        <h2>Cost Center</h2>
+                        <group col="4" colspan="2">
+                            <field name="code"/>
+                            <field name="company_id"/>
+                            <field name="title"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Cost Center Tree View -->
+        <record id="cost_centers_view_tree" model="ir.ui.view">
+            <field name="name">Cost Centers</field>
+            <field name="model">cost.centers</field>
+            <field name="arch" type="xml">
+                <tree name="Cost Centers">
+                    <field name="code"/>
+                    <field name="title"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Sale Order Form View -->
+<!--        <record id="sale_order_view_inherit" model="ir.ui.view">-->
+<!--            <field name="name">Sale Order</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--            <field name="inherit_id" ref="sale.view_order_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <field name="date_order" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}" />-->
+<!--                </field>-->
+
+<!--                <xpath expr="//field[@name='order_line']/tree/field[@name='tax_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}" />-->
+<!--                </xpath>-->
+
+<!--                <xpath expr="//field[@name='order_line']/form/group/group[1]/field[@name='tax_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}"/>-->
+<!--                </xpath>-->
+
+<!--                <xpath expr="//field[@name='order_line']" position="attributes">-->
+<!--                    <attribute name="context">{'default_cost_centers_id':cost_centers_id}</attribute>-->
+<!--                </xpath>-->
+
+<!--            </field>-->
+<!--        </record>-->
+
+        <!-- Purchase Order Form View -->
+<!--        <record id="purchase_order_view_inherit" model="ir.ui.view">-->
+<!--            <field name="name">Purchase Order</field>-->
+<!--            <field name="model">purchase.order</field>-->
+<!--            <field name="inherit_id" ref="purchase.purchase_order_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='date_order']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}" />-->
+<!--                </xpath>-->
+
+
+<!--                <xpath expr="//field[@name='order_line']/tree/field[@name='taxes_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}"/>-->
+<!--                </xpath>-->
+<!--                -->
+
+<!--                <xpath expr="//field[@name='order_line']/form/group/group[1]/field[@name='taxes_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}"/>-->
+<!--                </xpath>-->
+
+
+<!--                <xpath expr="//field[@name='order_line']" position="attributes">-->
+<!--                    <attribute name="context">{'default_cost_centers_id':cost_centers_id}</attribute>-->
+<!--                </xpath>-->
+
+
+<!--            </field>-->
+<!--        </record>-->
+
+        <!-- Customer Invoice Form View -->
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.customer.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="cost_centers_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='tax_ids']" position="after">
+                    <field name="cost_centers_id" options="{'no_create': True}" force_save="1"/>
+                </xpath>
+
+
+                <xpath expr="//field[@name='invoice_line_ids']/form/sheet/group[2]/field[@name='tax_ids']" position="after">
+                    <field name="cost_centers_id" options="{'no_create': True}" force_save="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='line_ids']/tree//field[@name='discount']" position="before">
+                    <field name="cost_centers_id" options="{'no_create': True}" force_save="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                    <attribute name="context">{'default_cost_centers_id':cost_centers_id}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- HR Employee Form View -->
+        <record id="hr_employee_view_inherit" model="ir.ui.view">
+            <field name="name">HR Employee</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="cost_centers_id" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- HR Expense Form View -->
+<!--        <record id="hr_expense_view_inherit" model="ir.ui.view">-->
+<!--            <field name="name">HR Expense</field>-->
+<!--            <field name="model">hr.expense</field>-->
+<!--            <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='employee_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}" attrs="{'readonly': [('state', 'not in', ('draft','reported','approved'))]}" />-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <!-- HR Expense Sheet Form View -->
+<!--        <record id="hr_expense_sheet_view_inherit" model="ir.ui.view">-->
+<!--            <field name="name">HR Expense Sheet</field>-->
+<!--            <field name="model">hr.expense.sheet</field>-->
+<!--            <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='employee_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />-->
+<!--                </xpath>-->
+<!--                <xpath expr="//tree/field[@name='analytic_account_id']" position="after">-->
+<!--                    <field name="cost_centers_id" options="{'no_create': True}"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="cost_centers_action" model="ir.actions.act_window">
+            <field name="name">Cost Centers</field>
+            <field name="res_model">cost.centers</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="cost_centers_menu" 
+            name="Cost Centers" 
+            action="cost_centers_action"
+            parent="account.menu_analytic_accounting"/>
+    </data>
+</odoo>

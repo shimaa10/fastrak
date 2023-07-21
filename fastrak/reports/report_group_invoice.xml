@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_group_invoice">
+        <t t-call="web.html_container">
+
+            <t t-call="fastrak.custom_external_layout_standard">
+                <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+
+                <div class="page">
+
+                    <div class="col-12">
+
+                        <div id="informations" class=" mt32 mb32">
+
+                            <div class="text-center">
+                                <span class="pull-left">
+                                    <t t-if="headers['partner_name']">
+                                        <strong>Customer:</strong>
+                                        <span class="m-0" t-esc="headers['partner_name']"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="pull-left">
+                                            <strong>Customer:</strong>
+                                            All Customers
+                                        </span>
+                                    </t>
+
+                                </span>
+
+                                <span class="pull-right">
+                                    <strong>Date:</strong>
+                                    <span class="m-0" t-esc="date_today"/>
+                                </span>
+                            </div>
+
+                            <!--                            <t t-if="headers['partner_name']">-->
+                            <!--                                <h4 class="text-left">-->
+                            <!--                                    <strong>Customer:</strong>-->
+                            <!--                                    <span class="m-0" t-esc="headers['partner_name']"/>-->
+                            <!--                                </h4>-->
+                            <!--                            </t>-->
+
+                            <!--                            <t t-if="date_today">-->
+                            <!--                                <h4 class="text-right">-->
+                            <!--                                    <strong>Date:</strong>-->
+                            <!--                                    <span class="m-0" t-esc="date_today"/>-->
+                            <!--                                </h4>-->
+                            <!--                            </t>-->
+
+                            <!--                            <t t-else="">-->
+                            <!--                                <h5 class="text-center">-->
+                            <!--                                    <strong>Partner:</strong>-->
+                            <!--                                    All-->
+                            <!--                                </h5>-->
+                            <!--                            </t>-->
+
+
+                            <br/>
+                            <div class="col-12">
+                                <t t-if="headers['date_from']">
+                                    <span class="span_splitter float-left col-6 mw-100 mb-2">
+                                        <strong>From:</strong>
+                                        <t t-esc="headers['date_from']"/>
+                                    </span>
+                                </t>
+
+                                <t t-if="headers['date_to']">
+
+                                    <span class="span_splitter float-right col-6 mw-100 mb-2 text-right">
+                                        <strong>To:</strong>
+                                        <t t-esc="headers['date_to']"/>
+                                    </span>
+                                </t>
+                            </div>
+
+                        </div>
+
+                        <table class="custom_table" name="address_table">
+                            <thead>
+                                <tr class="text-center" style="background:lightgray">
+                                    <th>
+                                        <span>No.</span>
+                                    </th>
+                                    <th>
+                                        <span>Date</span>
+                                    </th>
+                                    <th>
+                                        <span>Name</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Partner</span>
+                                    </th>
+
+                                    <th>
+                                        <span>BOL</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Weight</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Number of Items</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Delivery Type</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Delivery Time</span>
+                                    </th>
+
+                                    <th>
+                                        <span>Net Total</span>
+                                    </th>
+
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="text-center">
+                                <t t-set="line_number" t-value="1"/>
+
+                                <t t-foreach="invoices" t-as="invoice">
+
+                                    <tr>
+                                        <td>
+                                            <span t-esc="line_number"/>
+                                            <t t-set="line_number" t-value="line_number+1"/>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['create_date']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['invoice_name']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['customer_name']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['bol_number']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['weight']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['number_of_pieces']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['delivery_type']"/>
+                                                <t t-if="invoice['src_city']">
+                                                    <br/>
+                                                    <span t-esc="invoice['src_city']"/>
+                                                    >
+                                                    <span t-esc="invoice['dst_city']"/>
+                                                </t>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['delivery_time']"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span>
+                                                <span t-esc="invoice['total_amount']"/>
+                                                <span class="m-0" t-esc="invoice['currency_name']"/>
+
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                </t>
+
+                            </tbody>
+
+                            <tfooter>
+                                <!-- Total Only -->
+                                <tr style="background:lightgray" class="text-center">
+                                    <td colspan="9">
+                                        <span>Net Total:
+                                            <strong>
+                                                <span t-esc="net_total_words"/>
+                                            </strong>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="net_total_amount"/>
+                                    </td>
+
+                                    <!--                                    <td colspan="1"></td>-->
+                                </tr>
+                                <!-- Discount -->
+
+                                <tr class="text-center">
+                                    <td colspan="9">
+                                        <span>Discount</span>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="total_discount"/>
+                                    </td>
+
+                                    <!--                                    <td colspan="1"></td>-->
+                                </tr>
+
+                                <tr class="text-center">
+                                    <td colspan="9">
+                                        <span>Vat 14%</span>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="total_tax"/>
+                                    </td>
+
+                                    <!--                                    <td colspan="1"></td>-->
+                                </tr>
+
+                                <tr style="background:lightgray" class="text-center">
+                                    <td colspan="9">
+                                        <span>Total Invoice Amount:
+                                            <strong>
+                                                <span t-esc="total_amount_words"/>
+                                            </strong>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="total_amount"/>
+                                    </td>
+
+                                    <!--                                    <td colspan="1"></td>-->
+                                </tr>
+                            </tfooter>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </t>
+        </t>
+
+
+    </template>
+
+</odoo>

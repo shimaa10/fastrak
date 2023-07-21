@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <report
+            id="report_action_group_credit_invoice"
+            model="fastrak.group.invoice"
+            menu="True"
+            string="Group Credit Invoice"
+            report_type="qweb-pdf"
+            name="fastrak.group_credit_invoice_report"
+            file="fastrak.group_credit_invoice_report"
+            print_report_name="(object._get_report_filename())"
+
+    />
+
+    <template id="group_credit_invoice_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="fastrak.custom_external_layout_standard">
+                    <link href="/fastrak/static/src/css/custom.css" rel="stylesheet"/>
+
+                    <div class="page">
+
+                        <div class="col-12">
+                            <div id="informations" class=" mt32 mb32">
+                                <div class="col-12">
+
+                                    <span class="float-left col-12 mb-1">
+                                        <strong>Customer:</strong>
+                                        <span style="font-size:17px" t-field="doc.customer.display_name"/>
+                                    </span>
+
+
+                                    <span class="span_splitter float-left col-6 mw-100 mb-2">
+                                        <strong>Tax ID:</strong>
+                                        <span t-field="doc.customer.vat"/>
+                                        <br/>
+                                        <strong>From:</strong>
+                                        <span t-field="doc.from_date"/>
+                                        <br/>
+                                        <strong>To:</strong>
+                                        <span t-esc="doc.to_date"/>
+                                    </span>
+
+                                    <span class="span_splitter float-right col-6 mw-100 mb-2">
+                                        <strong>CR:</strong>
+                                        <span t-field="doc.customer.cr"/>
+                                        <br/>
+
+                                        <strong>Print Date:</strong>
+                                        <span t-esc="doc.print_date"/>
+                                        <br/>
+                                        <strong>Due At:</strong>
+                                        <span t-esc="doc.due_at"/>
+                                    </span>
+                                </div>
+
+
+                                <div class="col-12">
+
+                                    <div class="col-6 pull-left">
+                                        <small>
+                                            <u>Penalty Terms</u>:
+                                        </small>
+                                        <p t-field="doc.penalty_terms_and_condition"/>
+                                    </div>
+
+                                    <div class="col-6 pull-right">
+                                        <small>
+                                            <u>Bank Info</u>:
+                                        </small>
+                                        <p t-field="user.company_id.bank_details"/>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <table class="custom_table" name="address_table">
+                                <thead>
+                                    <tr class="text-center" style="background:lightgray">
+                                        <th>
+                                            <span>No.</span>
+                                        </th>
+                                        <th>
+                                            <span>Date</span>
+                                        </th>
+                                        <th>
+                                            <span>Name</span>
+                                        </th>
+
+
+                                        <th>
+                                            <span>BOL</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Weight</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Number of Items</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Delivery Type</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Delivery Time</span>
+                                        </th>
+
+                                        <th>
+                                            <span>Net Total</span>
+                                        </th>
+
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody class="text-center">
+                                    <t t-set="line_number" t-value="1"/>
+
+                                    <t t-foreach="doc.invoice_ids" t-as="invoice_line">
+
+                                        <tr>
+                                            <td>
+                                                <span t-esc="line_number"/>
+                                                <t t-set="line_number" t-value="line_number+1"/>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice.create_date"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice.name"/>
+                                                </span>
+                                            </td>
+
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).order_id"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).weight"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).number_of_pieces"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).delivery_type"/>
+                                                    <t t-if="invoice_line.invoice._get_bol(invoice_line.invoice.id).src_city">
+                                                        <br/>
+                                                        <small>
+                                                            <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).src_city"/>
+                                                            >
+                                                            <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).dst_city"/>
+                                                        </small>
+                                                    </t>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+                                                    <span t-field="invoice_line.invoice._get_bol(invoice_line.invoice.id).delivery_time"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span>
+<!--                                                    <span t-field="invoice_line.invoice.amount_total"/>-->
+                                                    <span t-esc="invoice_line.invoice.amount_total+ invoice_line.invoice._get_discounted_amount_lines()"/>
+                                                    <span t-esc="invoice_line.invoice.currency_id.symbol"/>
+
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                </tbody>
+
+                                <tfooter>
+                                    <!-- Gross Total -->
+                                    <tr style="background:lightgray" class="text-center">
+                                        <td colspan="8">
+                                            <span>Total Invoice Amount:
+                                                <strong>
+                                                    <span t-esc="doc._get_footer_totals().get('gross_total_amount_in_words')"/>
+                                                </strong>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="doc._get_footer_totals().get('gross_total_amount')"/>
+                                        </td>
+
+                                    </tr>
+
+
+                                    <!-- Discount -->
+                                    <t t-if="doc.total_discount">
+
+                                        <tr class="text-center">
+                                            <td colspan="8">
+                                                <span>Discount:
+                                                    <strong>
+                                                        <span t-esc="user.company_id.currency_id.amount_to_text(doc.total_discount)"/>
+                                                    </strong>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span t-esc="doc.total_discount"/>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+                                    <t t-if="doc._get_footer_totals().get('total_vat')">
+
+                                        <tr class="text-center">
+                                            <td colspan="8">
+                                                <span>Vat 14%</span>
+                                            </td>
+
+                                            <td>
+                                                <span t-esc="doc._get_footer_totals().get('total_vat')"/>
+                                            </td>
+
+                                        </tr>
+                                    </t>
+
+                                    <!-- Net Total-->
+                                    <tr style="background:lightgray" class="text-center">
+                                        <td colspan="8">
+                                            <span>Net Total:
+                                                <strong>
+                                                    <span t-esc="doc._get_footer_totals().get('net_total_amount_in_words')"/>
+                                                </strong>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="doc._get_footer_totals().get('net_total_amount')"/>
+                                        </td>
+
+                                    </tr>
+
+
+                                </tfooter>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

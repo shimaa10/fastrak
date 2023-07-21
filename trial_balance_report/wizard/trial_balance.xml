@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="trial_balance_report_view" model="ir.ui.view">
+        <field name="name">Trial Balance</field>
+        <field name="model">account.trial.balance.report</field>
+        <field name="inherit_id" ref="account.account_common_report_view"/>
+
+        <field name="arch" type="xml">
+            <!-- Require dates from & to -->
+            <xpath expr="//field[@name='date_from']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_to']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <field name="journal_ids" position="replace"/>
+            <!-- Hide Target move -->
+            <field name="target_move" position="replace"/>
+            <!-- Ignore display account add -->
+            <!--            <xpath expr="//field[@name='target_move']" position="after">-->
+            <!--                <field name="display_account" widget="radio"/>-->
+            <!--                <newline/>-->
+            <!--            </xpath>-->
+
+
+        </field>
+    </record>
+
+    <record id="action_account_trial_balance_menu" model="ir.actions.act_window">
+        <field name="name">Trial Balance</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.trial.balance.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="trial_balance_report_view"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_account"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <menuitem id="menu_trial_balance_report"
+              name="Trial Balance"
+              sequence="4"
+              parent="accounting_pdf_reports.menu_finance_legal_statement"
+              action="action_account_trial_balance_menu"
+              groups="account.group_account_user"/>
+
+</odoo>
