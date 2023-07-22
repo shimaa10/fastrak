@@ -309,11 +309,17 @@
 
                             <td colspan="1">
 
-                                <t t-set="total_taxes" t-value="0.0"/>
-                                <t t-foreach="o.amount_by_group" t-as="amount_by_group">
-                                    <span t-esc="amount_by_group[3]"/>
+                                <!-- <t t-set="tax_totals" t-value="o.tax_totals"/>
+                                <t t-foreach="tax_totals['groups_by_subtotal'][subtotal_to_show]" t-as="amount_by_group">
+                                    <span t-esc="amount_by_group['tax_group_amount']"/>
 
 
+                                </t> -->
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <t t-if="line.tax_line_id">
+                                       <!-- get the abs of balance -->
+                                       <span t-esc="abs(line.balance)" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    </t>
                                 </t>
                                 <!--                                <span t-esc="total_taxes"/>-->
                             </td>
