@@ -303,7 +303,7 @@ class BillOfLoading(Controller):
                                 raise ValidationError(
                                     "Order has been already confirmed and delivered can't update Weight")
 
-                            if bol_obj.invoice_id.invoice_payment_state == 'paid':
+                            if bol_obj.invoice_id.payment_state == 'paid':
                                 raise ValidationError("Order credit invoice bas been already paid can't update Weight")
 
                     # Will work in all other order status cases & confirmed order if passed checks
@@ -359,7 +359,7 @@ class BillOfLoading(Controller):
                                 raise ValidationError(
                                     "Order has been already confirmed delivered can't update Shipping Fees")
 
-                            if not bol_obj.invoice_id.invoice_payment_state == 'paid':
+                            if not bol_obj.invoice_id.payment_state == 'paid':
 
                                 # Update Shipping Service Line
                                 target_service_line.amount = shipping_fees
@@ -413,7 +413,7 @@ class BillOfLoading(Controller):
                                 raise ValidationError("Order already confirmed & delivered can't update discount")
 
                             # Change (service line amount & invoice line amount)
-                            if not bol_obj.invoice_id.invoice_payment_state == 'paid':
+                            if not bol_obj.invoice_id.payment_state == 'paid':
 
                                 # Update Shipping Service Line with old net shipping + new discount
                                 target_service_line.amount = shipping_fees + discount

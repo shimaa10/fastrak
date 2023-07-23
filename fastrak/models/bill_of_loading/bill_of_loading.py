@@ -138,10 +138,10 @@ class FastrakBillOfLoading(models.Model):
             if self.money_collection_bank_commission_fees <= 0:
                 raise ValidationError("Money Collection Bank Commission Fees Can't be equal or less than 0%")
 
-    @api.depends('invoice_id.invoice_payment_state')
+    @api.depends('invoice_id.payment_state')
     def toggle_order_payment_status(self):
         self.ensure_one()
-        if self.invoice_id.invoice_payment_state == 'paid':
+        if self.invoice_id.payment_state == 'paid':
             self.write({'order_payment_status': 'paid'})
 
     def write(self, vals):
@@ -260,7 +260,7 @@ class FastrakBillOfLoading(models.Model):
             self.invoice_id.write({'refund_reason_comment': self.refund_reason_comment})
             self.invoice_id._reverse_moves([{'ref': _('Reversal of %s') % self.invoice_id.name}], cancel=True)
 
-            # if self.invoice_id.invoice_payment_state == 'paid':
+            # if self.invoice_id.payment_state == 'paid':
             #     # Case Invoice Already Paid
             #     print("Refunding Paid Invoice")
             #     self.invoice_id._reverse_moves([{'ref': _('Reversal of %s') % self.invoice_id.name}], cancel=True)
@@ -734,7 +734,7 @@ class FastrakBillOfLoading(models.Model):
                     if not current_invoice:
                         raise ValidationError("No Invoice Found")
 
-                    if current_invoice.invoice_payment_state == 'paid':
+                    if current_invoice.payment_state == 'paid':
                         raise ValidationError("Invoice already paid")
 
                     if self.invoice_payment_collection:
@@ -790,7 +790,7 @@ class FastrakBillOfLoading(models.Model):
                     print("Case Cash Payment")
                     current_invoice = self.invoice_id
 
-                    if current_invoice.invoice_payment_state == 'paid':
+                    if current_invoice.payment_state == 'paid':
                         raise ValidationError("Invoice already paid")
 
                     if self.payment_collection_entry:

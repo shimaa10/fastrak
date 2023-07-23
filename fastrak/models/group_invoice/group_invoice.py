@@ -194,7 +194,7 @@ class GroupInvoice(models.Model):
                     ('create_date', '<=', rec.to_date),
                     ('on_credit_invoice', '=', True),
                     ('state', '=', 'posted'),
-                    ('invoice_payment_state', '=', 'not_paid')
+                    ('payment_state', '=', 'not_paid')
                 ]
             )
 
@@ -339,7 +339,7 @@ class GroupInvoice(models.Model):
                     rec.write({'penalty_invoice': penalty_invoice.id})
                 else:
                     # second check if there is invoice then update the penalty if invoice not yet paid
-                    if rec.penalty_invoice.invoice_payment_state == 'not_paid':
+                    if rec.penalty_invoice.payment_state == 'not_paid':
                         # reset to draft & clear invoice lines
                         rec.penalty_invoice.button_draft()
                         rec.penalty_invoice.invoice_line_ids = [(5,)]
