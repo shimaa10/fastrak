@@ -25,7 +25,9 @@ class DriverController(Controller):
         """
         result = {'code': None, 'message': None, 'data': None, 'status': 200}
         try:
+            print("iiiinnnnn")
             all_employees = request.env['hr.employee'].search([('active', '=', True), ('is_driver', '=', True)])
+            print("innnnnnnnnnn22222")
             if all_employees.exists():
                 result['message'] = 'Success'
                 result['code'] = 200

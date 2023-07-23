@@ -16,7 +16,7 @@ class ResUsers(models.Model):
         help="Authentication token for access to API (/api).",
         readonly=True
     )
-    api_token = fields.Char(readonly=True)
+    auth_token = fields.Char(readonly=True)
 
     token_value = fields.Char(compute='_get_token_value')
 
@@ -32,14 +32,22 @@ class ResUsers(models.Model):
             record.write({"api_token": self._get_unique_api_token()})
 
     def _get_unique_api_token(self):
-        api_token = str(uuid.uuid4())
-        api_token = base64.b64encode(api_token.encode('UTF-8'))
-        self.api_token = api_token
-
-        while self.search_count([("api_token", "=", api_token), ("api_token", "=", api_token)]):
-            api_token = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        api_token = base64.b64encode(auth_token.encode('UTF-8'))
+        print("tesssssssssssssssssssssssssssst")
+        self.auth_token = auth_token
+        print("yyyyyyyyyyyyyyyyyyyyyyyyyyy")
+        print(api_token)
+        # count = self.search_count([("api_token", "=", api_token), ("api_token", "=", api_token)])
+        # return api_token
+        # if count:
+        while self.search_count([("api_token", "=", api_token), ("auth_token", "=", auth_token)]):
+            print("loooop")
+            auth_token = str(uuid.uuid4())
             api_token = base64.b64encode(api_token.encode('UTF-8'))
-            self.api_token = api_token
+            self.auth_token = auth_token
+
+        print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
         return api_token
 
     @api.model

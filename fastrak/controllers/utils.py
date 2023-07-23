@@ -1,6 +1,6 @@
 # Generic Variables
 
-DB_NAME = 'fastrak_db'
+DB_NAME = 'fastrak1'
 API_ROOT = '/api/v1/fastrak'
 
 
