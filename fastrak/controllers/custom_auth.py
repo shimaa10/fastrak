@@ -62,7 +62,7 @@ CODE__no_api_worker = (
     "The API worker is currently not at work.",
 )
 
-DATABASE_NAME = 'fastrak_db'
+DATABASE_NAME = 'fastrak1'
 
 
 def get_raise_exception_checker():
@@ -201,18 +201,27 @@ def authenticate_token_for_user(token):
     :raise: HTTPException if user not found.
     """
 
-    user = request.env["res.users"].sudo().search([("api_token", "=", token)])
+    print(token)
+    print("8e3544dc-63a8-4451-85a8-50e76aa5d901")
+    user = request.env["res.users"].sudo().search([("auth_token", "=", token)])
+    print("User: ", user)
 
     if user.exists():
         # copy-pasted from odoo.http.py:OpenERPSession.authenticate()
         request.session.uid = user.id
         request.session.login = user.login
+        print(11)
 
         request.session.session_token = user.id and security.compute_session_token(request.session, request.env)
+        print(12)
+        print(request.context)
+        request.update_env(user.id, request.context)
 
-        request.uid = user.id
+        # request.uid = user.id
         request.disable_db = False
-        request.session.get_context()
+        print(13)
+        # request.session.get_context()
+        print("user done")
 
         return user
 
@@ -235,7 +244,9 @@ def get_auth_header(headers, raise_exception=False):
                                               or it is not Token type.
     """
     auth_header = headers.get("Authorization") or headers.get("authorization")
+    print("Header: ", auth_header)
     if not auth_header or not auth_header.startswith("Token "):
+        print("test")
         if raise_exception:
             print("EXCEPTION 1 MISS-CONFIGURED Token or bad authorization header")
             raise HTTPException(
@@ -258,10 +269,13 @@ def get_data_from_auth_header(header):
     """
 
     normalized_token = header.replace("Token ", "").replace("\\n", "").encode("utf-8")
+    print("normalized Token: ", normalized_token)
     try:
+        print("tttttttttttttttt")
         decoded_token_parts = (
             base64.b64decode(normalized_token).decode("utf-8").split(":")
         )
+        print(decoded_token_parts)
 
     except Exception as e:
         raise HTTPException(
@@ -297,7 +311,9 @@ def setup_db(httprequest, db_name):
 
     :raise: HTTPException if the database not found.
     """
+    print("setup db")
     if httprequest.session.db:
+        print("setup db if")
         return
     if db_name not in odoo.service.db.list_dbs(force=True):
         raise HTTPException(
@@ -369,7 +385,8 @@ def check_auth_decorator(controller_method):
 
         auth_header = get_auth_header(request.httprequest.headers, raise_exception=True)
         db_name, user_token = get_data_from_auth_header(auth_header)
-        setup_db(request.httprequest, DATABASE_NAME)
+        print(request)
+        setup_db(request, DATABASE_NAME)
         authenticated_user = authenticate_token_for_user(user_token)
         print("Authenticated User -> :", authenticated_user.name)
         data_for_log = {
