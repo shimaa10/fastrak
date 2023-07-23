@@ -132,8 +132,7 @@
                                    attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
 
                             <field name="invoice_id" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
-                            <hr/>
-
+                            <separator/>
                             <field name="invoice_payment_collection"
                                    attrs="{
                                    'readonly':True,
@@ -159,7 +158,7 @@
                             <field name="delivery_type" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
                             <field name="has_fragile" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
                             <field name="number_of_pieces" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
-                            <hr/>
+                            <separator/>
                             <field name="payment_method" attrs="{'readonly':[('order_status','not in',('draft',))]}"/>
                             <field name="money_collection_payment_method"
                                    attrs="{'readonly':[('order_status','not in',('draft',)),('money_collection_entry','!=',False)]}"/>
